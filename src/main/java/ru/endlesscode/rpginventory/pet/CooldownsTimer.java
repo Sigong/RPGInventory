@@ -10,6 +10,7 @@ import ru.endlesscode.rpginventory.inventory.InventoryManager;
 import ru.endlesscode.rpginventory.inventory.slot.Slot;
 import ru.endlesscode.rpginventory.inventory.slot.SlotManager;
 import ru.endlesscode.rpginventory.utils.ItemUtils;
+import ru.endlesscode.rpginventory.utils.ProfileUtils;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,7 +51,7 @@ public class CooldownsTimer extends BukkitRunnable {
             return;
         }
 
-        this.temporaryMap.put(player.getUniqueId(), new ValuePair(itemStack, new AtomicInteger(0)));
+        this.temporaryMap.put(ProfileUtils.tryToGetProfileUUID(player), new ValuePair(itemStack, new AtomicInteger(0)));
     }
 
     @Override

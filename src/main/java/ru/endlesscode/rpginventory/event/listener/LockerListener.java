@@ -34,6 +34,7 @@ import ru.endlesscode.rpginventory.inventory.InventoryLocker;
 import ru.endlesscode.rpginventory.inventory.InventoryManager;
 import ru.endlesscode.rpginventory.utils.ItemUtils;
 import ru.endlesscode.rpginventory.utils.PlayerUtils;
+import ru.endlesscode.rpginventory.utils.ProfileUtils;
 
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class LockerListener implements Listener {
         }
 
         if (event.getNewGameMode() == GameMode.CREATIVE) {
-            InventoryLocker.unlockSlots(player);
+            InventoryLocker.unlockSlots(player, ProfileUtils.tryToGetProfileUUID(player));
         } else if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
             InventoryLocker.lockSlots(player, true);
         }

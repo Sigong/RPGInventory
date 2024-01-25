@@ -32,6 +32,7 @@ import ru.endlesscode.rpginventory.item.ItemManager;
 import ru.endlesscode.rpginventory.pet.PetManager;
 import ru.endlesscode.rpginventory.pet.PetType;
 import ru.endlesscode.rpginventory.utils.ItemUtils;
+import ru.endlesscode.rpginventory.utils.ProfileUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,7 +88,7 @@ public class InventorySaver {
                 }
             }
         }
-        ARMORS.put(player.getUniqueId(), armorList.toArray(new ItemStack[0]));
+        ARMORS.put(ProfileUtils.tryToGetProfileUUID(player), armorList.toArray(new ItemStack[0]));
 
         List<ItemStack> contents = Arrays.asList(player.getInventory().getStorageContents());
         for (int i = 0; i < contents.size(); i++) {
@@ -155,14 +156,14 @@ public class InventorySaver {
                 contents.replaceAll(itemStack -> drop.equals(itemStack) ? null : itemStack);
             }
         }
-        INVENTORIES.put(player.getUniqueId(), contents.toArray(new ItemStack[0]));
+        INVENTORIES.put(ProfileUtils.tryToGetProfileUUID(player), contents.toArray(new ItemStack[0]));
 
         // Saving shield
         Slot shieldSlot = SlotManager.instance().getShieldSlot();
         if (shieldSlot != null && (saveItems || !shieldSlot.isDrop())) {
             ItemStack itemInOffHand = player.getEquipment().getItemInOffHand();
             if (ItemUtils.isNotEmpty(itemInOffHand)) {
-                EXTRA.put(player.getUniqueId(), itemInOffHand);
+                EXTRA.put(ProfileUtils.tryToGetProfileUUID(player), itemInOffHand);
                 drops.remove(itemInOffHand);
             }
         }
@@ -173,15 +174,15 @@ public class InventorySaver {
 
     public static void restore(Player player) {
         // Restoring armor
-        if (ARMORS.containsKey(player.getUniqueId())) {
-            player.getInventory().setArmorContents(ARMORS.get(player.getUniqueId()));
-            ARMORS.remove(player.getUniqueId());
+        if (ARMORS.containsKey(ProfileUtils.tryToGetProfileUUID(player))) {
+            player.getInventory().setArmorContents(ARMORS.get(ProfileUtils.tryToGetProfileUUID(player)));
+            ARMORS.remove(ProfileUtils.tryToGetProfileUUID(player));
         }
 
         // Restoring inventory
-        if (INVENTORIES.containsKey(player.getUniqueId())) {
+        if (INVENTORIES.containsKey(ProfileUtils.tryToGetProfileUUID(player))) {
             Inventory inventory = player.getInventory();
-            ItemStack[] contents = INVENTORIES.get(player.getUniqueId());
+            ItemStack[] contents = INVENTORIES.get(ProfileUtils.tryToGetProfileUUID(player));
             for (int i = 0; i < contents.length; i++) {
                 ItemStack item = contents[i];
 
@@ -190,13 +191,13 @@ public class InventorySaver {
                 }
             }
 
-            INVENTORIES.remove(player.getUniqueId());
+            INVENTORIES.remove(ProfileUtils.tryToGetProfileUUID(player));
         }
 
         // Restoring extra slots
-        if (EXTRA.containsKey(player.getUniqueId())) {
-            player.getInventory().setItemInOffHand(EXTRA.get(player.getUniqueId()));
-            EXTRA.remove(player.getUniqueId());
+        if (EXTRA.containsKey(ProfileUtils.tryToGetProfileUUID(player))) {
+            player.getInventory().setItemInOffHand(EXTRA.get(ProfileUtils.tryToGetProfileUUID(player)));
+            EXTRA.remove(ProfileUtils.tryToGetProfileUUID(player));
         }
     }
 }

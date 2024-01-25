@@ -68,6 +68,7 @@ import ru.endlesscode.rpginventory.pet.PetType;
 import ru.endlesscode.rpginventory.utils.EntityUtils;
 import ru.endlesscode.rpginventory.utils.LocationUtils;
 import ru.endlesscode.rpginventory.utils.PlayerUtils;
+import ru.endlesscode.rpginventory.utils.ProfileUtils;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -91,7 +92,7 @@ public class PetListener implements Listener {
         if (petOwner == null) {
             return;
         }
-        if (!event.getPlayer().getUniqueId().equals(petOwner)) {
+        if (!ProfileUtils.tryToGetProfileUUID(event.getPlayer()).equals(petOwner)) {
             event.setCancelled(true);
         }
     }
@@ -328,7 +329,7 @@ public class PetListener implements Listener {
                 && !Config.getConfig().getBoolean("attack.own-pet") && player != null) {
             final Tameable petEntity = (Tameable) event.getEntity();
             final AnimalTamer petOwner = petEntity.getOwner();
-            if (petOwner != null && player.getUniqueId().equals(petOwner.getUniqueId())) {
+            if (petOwner != null && ProfileUtils.tryToGetProfileUUID(player).equals(ProfileUtils.tryToGetProfileUUID((Player) petOwner))) {
                 event.setCancelled(true);
             }
         } else if (player != null) {

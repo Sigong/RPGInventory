@@ -60,6 +60,7 @@ import ru.endlesscode.rpginventory.utils.ItemUtils;
 import ru.endlesscode.rpginventory.utils.LocationUtils;
 import ru.endlesscode.rpginventory.utils.Log;
 import ru.endlesscode.rpginventory.utils.NbtFactoryMirror;
+import ru.endlesscode.rpginventory.utils.ProfileUtils;
 import ru.endlesscode.rpginventory.utils.SafeEnums;
 
 import java.nio.file.Files;
@@ -380,7 +381,7 @@ public class PetManager {
         assert speedAttribute != null;
         speedAttribute.setBaseValue(petType.getSpeed());
 
-        pet.setMetadata(PetManager.METADATA_KEY_PET_OWNER, new FixedMetadataValue(RPGInventory.getInstance(), player.getUniqueId()));
+        pet.setMetadata(PetManager.METADATA_KEY_PET_OWNER, new FixedMetadataValue(RPGInventory.getInstance(), ProfileUtils.tryToGetProfileUUID(player)));
 
         if (hasInitializationErrors) {
             Log.w("The pet ''{0}'' has errors on initialization and can be differ from expected result.", pet.getCustomName());

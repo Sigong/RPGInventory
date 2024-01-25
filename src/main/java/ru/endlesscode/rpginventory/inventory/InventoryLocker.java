@@ -42,6 +42,7 @@ import ru.endlesscode.rpginventory.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by OsipXD on 28.08.2015
@@ -193,7 +194,7 @@ public class InventoryLocker {
         InventoryManager.lockEmptySlots(player);
     }
 
-    public static void unlockSlots(@NotNull Player player) {
+    public static void unlockSlots(@NotNull Player player, UUID profileUUID) {
         if (InventoryLocker.isEnabled()) {
             for (int i = 8 + getSlots(player); i < 36; i++) {
                 ItemStack itemStack = player.getInventory().getItem(i);
@@ -204,7 +205,7 @@ public class InventoryLocker {
         }
 
         InventoryManager.unlockQuickSlots(player);
-        InventoryManager.unlockEmptySlots(player);
+        InventoryManager.unlockEmptySlots(profileUUID);
     }
 
     public static boolean canBuySlot(@NotNull Player player, int line) {

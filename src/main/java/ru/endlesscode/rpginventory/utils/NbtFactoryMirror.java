@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * For some kind of shit, ProtocolLib's method works wrong in version 4.4.0 But if I just copy
- * their code to my class it works fine. Recompiling of ProtocolLib also helps. (╯°□°)╯︵ ┻━┻
+ * their code to my class it works fine. Recompiling of ProtocolLib also helps. (╯°□°)╯
  * TODO: Remove when new version of ProtocolLib will be released.
  * Track progress of the issue here: https://github.com/dmulloy2/ProtocolLib/issues/587
  */

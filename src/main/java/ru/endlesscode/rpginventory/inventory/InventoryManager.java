@@ -18,6 +18,7 @@
 
 package ru.endlesscode.rpginventory.inventory;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -54,6 +55,7 @@ import ru.endlesscode.rpginventory.utils.InventoryUtils;
 import ru.endlesscode.rpginventory.utils.ItemUtils;
 import ru.endlesscode.rpginventory.utils.Log;
 import ru.endlesscode.rpginventory.utils.PlayerUtils;
+import ru.endlesscode.rpginventory.utils.ProfileUtils;
 import ru.endlesscode.rpginventory.utils.SafeEnums;
 import ru.endlesscode.rpginventory.utils.StringUtils;
 
@@ -424,7 +426,7 @@ public class InventoryManager {
     }
 
     static void lockEmptySlots(Player player) {
-        lockEmptySlots(INVENTORIES.get(player.getUniqueId()).getInventory());
+        lockEmptySlots(INVENTORIES.get(ProfileUtils.tryToGetProfileUUID(player)).getInventory());
     }
 
     public static void lockEmptySlots(Inventory inventory) {
@@ -438,8 +440,8 @@ public class InventoryManager {
         }
     }
 
-    static void unlockEmptySlots(Player player) {
-        Inventory inventory = INVENTORIES.get(player.getUniqueId()).getInventory();
+    static void unlockEmptySlots(UUID uuid) {
+        Inventory inventory = INVENTORIES.get(uuid).getInventory();
 
         for (int i = 0; i < inventory.getSize(); i++) {
             Slot slot = SlotManager.instance().getSlot(i, InventoryType.SlotType.CONTAINER);
@@ -491,12 +493,12 @@ public class InventoryManager {
 
     public static boolean isNewPlayer(@NotNull Player player) {
         Path dataFolder = RPGInventory.getInstance().getDataFolder().toPath();
-        return Files.notExists(dataFolder.resolve("inventories/" + player.getUniqueId() + ".inv"));
+        return Files.notExists(dataFolder.resolve("inventories/" + ProfileUtils.tryToGetProfileUUID(player) + ".inv"));
     }
 
     public static void loadPlayerInventory(Player player) {
         if (!InventoryManager.isAllowedWorld(player.getWorld())) {
-            InventoryManager.INVENTORIES.remove(player.getUniqueId());
+            InventoryManager.INVENTORIES.remove(ProfileUtils.tryToGetProfileUUID(player));
             return;
         }
 
@@ -506,7 +508,7 @@ public class InventoryManager {
             Files.createDirectories(folder);
 
             // Load inventory from file
-            Path file = folder.resolve(player.getUniqueId() + ".inv");
+            Path file = folder.resolve(ProfileUtils.tryToGetProfileUUID(player) + ".inv");
 
             PlayerWrapper playerWrapper = null;
             if (Files.exists(file)) {
@@ -529,7 +531,7 @@ public class InventoryManager {
                 return;
             }
 
-            InventoryManager.INVENTORIES.put(player.getUniqueId(), playerWrapper);
+            InventoryManager.INVENTORIES.put(ProfileUtils.tryToGetProfileUUID(player), playerWrapper);
 
             InventoryLocker.lockSlots(player);
             PetManager.initPlayer(player);
@@ -540,32 +542,62 @@ public class InventoryManager {
         }
     }
 
+    // This version of the method first unloads the player's base inventory, then unloads the profile inventory if it exists.
     public static void unloadPlayerInventory(@NotNull Player player) {
-        if (!InventoryManager.playerIsLoaded(player)) {
-            return;
+        boolean unloadedBaseInventory = false;
+        if(InventoryManager.uuidIsLoaded(player.getUniqueId())){
+            unloadUUIDInventory(player, player.getUniqueId());
+            unloadedBaseInventory = true;
         }
+        boolean unloadedProfileInventory = false;
+        // The below code won't run if there is no profile selected because the utility method will return the base UUID
+        if(InventoryManager.uuidIsLoaded(ProfileUtils.tryToGetProfileUUID(player))){
+            unloadUUIDInventory(player, ProfileUtils.tryToGetProfileUUID(player));
+            unloadedProfileInventory = true;
+        }
+        if(unloadedBaseInventory && unloadedProfileInventory){
+            Bukkit.getLogger().warning("[RPG Inventory] Base and profile inventory were unloaded for a single player, this should not occur.");
+        }
+    }
 
-        InventoryManager.INVENTORIES.get(player.getUniqueId()).onUnload();
-        savePlayerInventory(player);
-        InventoryLocker.unlockSlots(player);
+    private static void unloadUUIDInventory(@NotNull Player player, @NotNull UUID uuid){
 
-        InventoryManager.INVENTORIES.remove(player.getUniqueId());
+
+        InventoryManager.INVENTORIES.get(uuid).onUnload();
+        saveUUIDInventory(uuid);
+        InventoryLocker.unlockSlots(player, uuid);
+
+        InventoryManager.INVENTORIES.remove(uuid);
 
         RPGInventory.getInstance().getServer().getPluginManager().callEvent(new PlayerInventoryUnloadEvent.Post(player));
     }
 
-    public static void savePlayerInventory(@NotNull Player player) {
-        if (!InventoryManager.playerIsLoaded(player)) {
+//    public static void unloadPlayerInventory(@NotNull Player player, boolean unloadBaseInventory) {
+//        if (!InventoryManager.playerIsLoaded(player)) {
+//            return;
+//        }
+//
+//        InventoryManager.INVENTORIES.get(ProfileUtils.tryToGetProfileUUID(player)).onUnload();
+//        savePlayerInventory(player);
+//        InventoryLocker.unlockSlots(player);
+//
+//        InventoryManager.INVENTORIES.remove(ProfileUtils.tryToGetProfileUUID(player));
+//
+//        RPGInventory.getInstance().getServer().getPluginManager().callEvent(new PlayerInventoryUnloadEvent.Post(player));
+//    }
+
+    public static void saveUUIDInventory(@NotNull UUID uuid){
+        if (!InventoryManager.uuidIsLoaded(uuid)) {
             return;
         }
 
-        PlayerWrapper playerWrapper = InventoryManager.INVENTORIES.get(player.getUniqueId());
+        PlayerWrapper playerWrapper = InventoryManager.INVENTORIES.get(uuid);
         try {
             Path dataFolder = RPGInventory.getInstance().getDataPath();
             Path folder = dataFolder.resolve("inventories");
             Files.createDirectories(folder);
 
-            Path file = folder.resolve(player.getUniqueId() + ".inv");
+            Path file = folder.resolve(uuid + ".inv");
             Files.deleteIfExists(file);
 
             Serialization.save(playerWrapper.createSnapshot(), file);
@@ -574,9 +606,29 @@ public class InventoryManager {
         }
     }
 
+//    public static void savePlayerInventory(@NotNull Player player) {
+//        if (!InventoryManager.playerIsLoaded(player)) {
+//            return;
+//        }
+//
+//        PlayerWrapper playerWrapper = InventoryManager.INVENTORIES.get(ProfileUtils.tryToGetProfileUUID(player));
+//        try {
+//            Path dataFolder = RPGInventory.getInstance().getDataPath();
+//            Path folder = dataFolder.resolve("inventories");
+//            Files.createDirectories(folder);
+//
+//            Path file = folder.resolve(ProfileUtils.tryToGetProfileUUID(player) + ".inv");
+//            Files.deleteIfExists(file);
+//
+//            Serialization.save(playerWrapper.createSnapshot(), file);
+//        } catch (IOException | NullPointerException e) {
+//            Log.w(e, "Error on inventory save");
+//        }
+//    }
+
     @NotNull
     public static PlayerWrapper get(@NotNull OfflinePlayer player) {
-        PlayerWrapper playerWrapper = InventoryManager.INVENTORIES.get(player.getUniqueId());
+        PlayerWrapper playerWrapper = InventoryManager.INVENTORIES.get(ProfileUtils.tryToGetProfileUUID(player));
         if (playerWrapper == null) {
             throw new IllegalStateException(player.getName() + "'s inventory should be initialized!");
         }
@@ -609,9 +661,15 @@ public class InventoryManager {
         return false;
     }
 
+    // Same functionality as below method, but allows caller to pass in UUID to check.
+    // Added to allow for direct profile uuid checking without modifying too much other code.
+    public static boolean uuidIsLoaded(@Nullable UUID uuid){
+        return uuid != null && InventoryManager.INVENTORIES.containsKey(uuid);
+    }
+
     @Contract("null -> false")
     public static boolean playerIsLoaded(@Nullable AnimalTamer player) {
-        return player != null && InventoryManager.INVENTORIES.containsKey(player.getUniqueId());
+        return player != null && InventoryManager.INVENTORIES.containsKey(ProfileUtils.tryToGetProfileUUID((Player) player));
     }
 
     public static boolean isAllowedWorld(@NotNull World world) {

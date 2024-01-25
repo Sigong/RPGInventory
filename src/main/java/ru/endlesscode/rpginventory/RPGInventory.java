@@ -234,6 +234,7 @@ public class RPGInventory extends PluginLifecycle {
         pm.registerEvents(new HandSwapListener(), this);
         pm.registerEvents(new PlayerListener(), this);
         pm.registerEvents(new WorldListener(), this);
+        pm.registerEvents(new ProfileListener(), this);
 
         if (SlotManager.instance().getElytraSlot() != null) {
             pm.registerEvents(new ElytraListener(), this);

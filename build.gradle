@@ -50,6 +50,11 @@ repositories {
     placeholderapi()
     jitpack()
 
+    def phoenixDevRepo = maven {
+        name = "phoenixDev"
+        url = uri("https://nexus.phoenixdevt.fr/repository/maven-public/")
+    }
+
     // You should configure credentials for this repo
     def myPetRepo = maven {
         name = "githubPackages"
@@ -109,6 +114,9 @@ dependencies {
     implementation('org.bstats:bstats-bukkit:3.0.0')
     testImplementation('junit:junit:4.13.2')
     testImplementation('org.mockito:mockito-core:4.4.0')
+
+    compileOnly('fr.phoenixdevt:Profile-API:1.1')
+    compileOnly('io.lumine:MythicLib-dist:1.6.2-SNAPSHOT')
 }
 
 jacocoTestReport {

@@ -26,6 +26,7 @@ import org.bukkit.event.world.WorldSaveEvent;
 import org.jetbrains.annotations.NotNull;
 import ru.endlesscode.rpginventory.inventory.InventoryManager;
 import ru.endlesscode.rpginventory.inventory.backpack.BackpackManager;
+import ru.endlesscode.rpginventory.utils.ProfileUtils;
 
 /**
  * Created by OsipXD on 24.11.2015
@@ -42,7 +43,7 @@ public class WorldListener implements Listener {
         BackpackManager.saveBackpacks();
 
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            InventoryManager.savePlayerInventory(player);
+            InventoryManager.saveUUIDInventory(ProfileUtils.tryToGetProfileUUID(player));
         }
     }
 }
