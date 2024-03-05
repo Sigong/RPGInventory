@@ -28,6 +28,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,8 +63,9 @@ import ru.endlesscode.rpginventory.utils.StringUtils;
 import ru.endlesscode.rpginventory.utils.Version;
 
 import java.nio.file.Path;
+import java.util.logging.Logger;
 
-public class RPGInventory extends PluginLifecycle {
+public class RPGInventory extends JavaPlugin {
     private static RPGInventory instance;
 
     private Permission perms;
@@ -121,14 +123,12 @@ public class RPGInventory extends PluginLifecycle {
     }
 
     @Override
-    public void init() {
+    public void onLoad() {
+
         instance = this;
         Log.init(this.getLogger());
         Config.init(this);
-    }
 
-    @Override
-    public void onLoad() {
         if (checkMimic()) {
             mimic = Mimic.getInstance();
             mimic.registerItemsRegistry(new RPGInventoryItemsRegistry(), MimicApiLevel.VERSION_0_7, this, ServicePriority.High);
@@ -139,6 +139,10 @@ public class RPGInventory extends PluginLifecycle {
 
     @Override
     public void onEnable() {
+
+        // Init logger
+//        Log.init(Logger.getLogger("RPGInventory"));
+
         if (!initMimicSystems()) {
             return;
         }
@@ -152,11 +156,12 @@ public class RPGInventory extends PluginLifecycle {
             return;
         }
         loadPlayers();
-        startMetrics();
+        //startMetrics();
 
         // Enable commands
         this.getCommand("rpginventory")
-                .setExecutor(new TrackedCommandExecutor(new RPGInventoryCommandExecutor(), getReporter()));
+                //.setExecutor(new TrackedCommandExecutor(new RPGInventoryCommandExecutor(), getReporter()));
+                .setExecutor(new RPGInventoryCommandExecutor());
 
         this.checkUpdates(null);
     }
@@ -302,9 +307,9 @@ public class RPGInventory extends PluginLifecycle {
         this.savePlayers();
     }
 
-    private void startMetrics() {
-        new Metrics(holder, 4210);
-    }
+//    private void startMetrics() {
+//        new Metrics(holder, 4210);
+//    }
 
     private void savePlayers() {
         if (this.getServer().getOnlinePlayers().size() == 0) {

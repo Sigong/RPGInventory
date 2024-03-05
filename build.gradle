@@ -16,7 +16,7 @@ bukkit {
 
     meta {
         name.set("RPGInventory")
-        main.set("${group}.RPGInventoryPlugin")
+        main.set("${group}.RPGInventory")
         apiVersion.set("1.14")
         authors.set(["osipxd", "EndlessCode Group"])
     }
