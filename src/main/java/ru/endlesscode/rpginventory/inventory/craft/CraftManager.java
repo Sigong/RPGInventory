@@ -92,7 +92,7 @@ public class CraftManager {
 
             return true;
         } catch (Exception e) {
-            instance.getReporter().report("Error on CraftManager initialization", e);
+            //instance.getReporter().report("Error on CraftManager initialization", e);
             return false;
         }
     }

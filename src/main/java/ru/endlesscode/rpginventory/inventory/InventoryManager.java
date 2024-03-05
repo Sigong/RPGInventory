@@ -73,13 +73,13 @@ public class InventoryManager {
     private static final Map<UUID, PlayerWrapper> INVENTORIES = new HashMap<>();
 
     private static ItemStack FILL_SLOT = null;
-    private static Reporter reporter;
+    //private static Reporter reporter;
 
     private InventoryManager() {
     }
 
     public static boolean init(@NotNull RPGInventory instance) {
-        reporter = instance.getReporter();
+        //reporter = instance.getReporter();
 
         try {
             Texture texture = Texture.parseTexture(Config.getConfig().getString("fill"));
@@ -90,7 +90,7 @@ public class InventoryManager {
                 InventoryManager.FILL_SLOT.setItemMeta(meta);
             }
         } catch (Exception e) {
-            reporter.report("Error on InventoryManager initialization", e);
+            //reporter.report("Error on InventoryManager initialization", e);
             return false;
         }
 
@@ -538,7 +538,7 @@ public class InventoryManager {
 
             RPGInventory.getInstance().getServer().getPluginManager().callEvent(new PlayerInventoryLoadEvent.Post(player));
         } catch (IOException e) {
-            reporter.report("Error on inventory load", e);
+            //reporter.report("Error on inventory load", e);
         }
     }
 

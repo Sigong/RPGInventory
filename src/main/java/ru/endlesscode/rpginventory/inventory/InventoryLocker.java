@@ -72,7 +72,7 @@ public class InventoryLocker {
                 return false;
             }
         } catch (Exception e) {
-            instance.getReporter().report("Error on InventoryLocker initialization", e);
+            //instance.getReporter().report("Error on InventoryLocker initialization", e);
             return false;
         }
 

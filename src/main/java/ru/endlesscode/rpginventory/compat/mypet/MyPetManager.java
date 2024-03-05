@@ -82,7 +82,7 @@ public class MyPetManager implements Listener {
             plugin.getServer().getPluginManager().registerEvents(new MyPetManager(), plugin);
             return true;
         } catch (Exception e) {
-            plugin.getReporter().report(e.getMessage(), e);
+            //plugin.getReporter().report(e.getMessage(), e);
             return false;
         }
     }

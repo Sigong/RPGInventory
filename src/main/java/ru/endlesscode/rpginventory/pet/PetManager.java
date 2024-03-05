@@ -139,7 +139,7 @@ public class PetManager {
                 }
             }
         } catch (Exception e) {
-            instance.getReporter().report("Error on PetManager initialization", e);
+            //instance.getReporter().report("Error on PetManager initialization", e);
             return false;
         }
 

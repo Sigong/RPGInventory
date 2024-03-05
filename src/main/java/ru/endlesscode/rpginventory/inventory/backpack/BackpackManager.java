@@ -72,7 +72,7 @@ public class BackpackManager {
             return false;
         }
 
-        reporter = instance.getReporter();
+        //reporter = instance.getReporter();
 
         try {
             Path petsFile = RPGInventory.getInstance().getDataPath().resolve(CONFIG_NAME);
@@ -113,7 +113,7 @@ public class BackpackManager {
             instance.getServer().getPluginManager().registerEvents(new BackpackListener(), instance);
             return true;
         } catch (Exception e) {
-            reporter.report("Error on BackpackManager initialization", e);
+            //reporter.report("Error on BackpackManager initialization", e);
             return false;
         }
     }

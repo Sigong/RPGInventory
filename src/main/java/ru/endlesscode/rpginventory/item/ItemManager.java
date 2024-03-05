@@ -95,7 +95,7 @@ public class ItemManager {
             instance.getServer().getPluginManager().registerEvents(new ItemListener(), instance);
             return true;
         } catch (Exception e) {
-            instance.getReporter().report("Error on InventoryManager initialization", e);
+            //instance.getReporter().report("Error on InventoryManager initialization", e);
             return false;
         }
     }

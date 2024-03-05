@@ -44,7 +44,7 @@ public class EntityUtils {
     private static Method entityInsentient_getNavigation;
     private static final Class<?> entityInsentientClass = MinecraftReflection.getMinecraftClass("EntityInsentient");
 
-    private static final Reporter reporter = RPGInventory.getInstance().getReporter();
+    //private static final Reporter reporter = RPGInventory.getInstance().getReporter();
 
     static {
         try {
@@ -53,7 +53,7 @@ public class EntityUtils {
             navigationAbstract_a = MinecraftReflection.getMinecraftClass("NavigationAbstract")
                     .getDeclaredMethod("a", double.class, double.class, double.class, double.class);
         } catch (NoSuchMethodException e) {
-            reporter.report("Error on EntityUtils initialization", e);
+            //reporter.report("Error on EntityUtils initialization", e);
         }
     }
 
@@ -84,7 +84,7 @@ public class EntityUtils {
             Object navigation = entityInsentient_getNavigation.invoke(insentient);
             navigationAbstract_a.invoke(navigation, target.getX(), target.getY(), target.getZ(), speedModifier);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            reporter.report("Error on going pet to player", e);
+            //reporter.report("Error on going pet to player", e);
         }
     }
 }
