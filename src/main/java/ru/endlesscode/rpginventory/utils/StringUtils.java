@@ -21,7 +21,8 @@ package ru.endlesscode.rpginventory.utils;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+//import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +34,8 @@ import ru.endlesscode.rpginventory.item.ItemStat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by OsipXD on 29.08.2015
@@ -40,8 +43,53 @@ import java.util.List;
  * All rights reserved 2014 - 2016 © «EndlessCode Group»
  */
 public class StringUtils {
+
+    // Regex Pattern for a RGB hex color code prepended with an &
+    private static final String pattern = "&#[a-fA-F0-9]{6}";
+
+    // Returns the string with each group of characters that matches the pattern replaced with
+    // the corresponding hex ColorCode
+    private static String interpretHex(String str){
+        Pattern p = Pattern.compile(pattern);
+        Matcher matcher = p.matcher(str);
+
+        ArrayList<String> pieces = new ArrayList<>();
+
+        // For every match, add all non-matching characters between this match
+        // and the last match (or beginning of the string), then add the match
+        // with the ampersand (&) removed.
+        int idx = 0;
+        while(matcher.find()){
+            int start = matcher.start();
+            if(idx != start){
+                pieces.add(str.substring(idx, start));
+            }
+            pieces.add(str.substring(start+1, start+8));
+            idx = start+8;
+        }
+
+        // Add the final non-matching section of the string if it exists.
+        if(idx != str.length()){
+            pieces.add(str.substring(idx));
+        }
+
+        // Replace each hex color code String in the ArrayList with a ChatColor
+        for(int i = 0; i < pieces.size() ; i++){
+            if(pieces.get(i).matches(pattern.substring(1))){
+                pieces.set(i, "" + ChatColor.of(pieces.get(i)));
+            }
+        }
+
+        return String.join("", pieces);
+    }
+
     @NotNull
     public static String coloredLine(@NotNull String line) {
+        //Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "CALLED COLORED LINE METHOD FOR STRING" + line);
+        if(Pattern.compile(pattern).matcher(line).find()){
+            //Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "LINE MATCHES HEX PATTERN");
+            line = interpretHex(line);
+        }
         return ChatColor.translateAlternateColorCodes('&', line);
     }
 
