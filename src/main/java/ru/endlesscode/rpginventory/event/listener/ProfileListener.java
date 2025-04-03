@@ -18,7 +18,7 @@ public class ProfileListener implements Listener{
 
     @EventHandler
     public void onProfileUnload(ProfileUnloadEvent event){
-        //Bukkit.getConsoleSender().sendMessage("[RPGInventory] " + event.getPlayer().getName() + " unloaded profile.");
+        //ukkit.getConsoleSender().sendMessage("[RPGInventory] " + event.getPlayer().getName() + " unloaded profile.");
         InventoryManager.unloadPlayerInventory(event.getPlayer());
     }
 }
