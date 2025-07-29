@@ -18,10 +18,9 @@
 
 package ru.endlesscode.rpginventory.utils;
 
-import com.comphenix.packetwrapper.WrapperPlayServerTitle;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
@@ -29,13 +28,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import com.comphenix.packetwrapper.WrapperPlayServerTitle;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
+
 import ru.endlesscode.inspector.bukkit.scheduler.TrackedBukkitRunnable;
 import ru.endlesscode.rpginventory.RPGInventory;
 import ru.endlesscode.rpginventory.compat.SoundCompat;
 import ru.endlesscode.rpginventory.misc.config.Config;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 /**
  * Created by OsipXD on 21.09.2015
@@ -66,14 +68,14 @@ public class EffectUtils {
         Location loc = entity.getLocation();
 
         entity.getWorld().playSound(loc, SoundCompat.ENDERMAN_TELEPORT.get(), 1, (float) (1.2 + Math.random() * 0.4));
-        playParticlesToAll(Particle.EXPLOSION_LARGE, 3, loc);
+        playParticlesToAll(Particle.EXPLOSION, 3, loc);
     }
 
     public static void playDespawnEffect(Entity entity) {
         Location loc = entity.getLocation();
 
         entity.getWorld().playSound(loc, SoundCompat.ENDERMAN_TELEPORT.get(), 1, (float) (0.6 + Math.random() * 0.4));
-        playParticlesToAll(Particle.SMOKE_NORMAL, 3, loc);
+        playParticlesToAll(Particle.SMOKE, 3, loc);
     }
 
 
@@ -101,7 +103,7 @@ public class EffectUtils {
         }
 
         final WrapperPlayServerTitle titlePacket = new WrapperPlayServerTitle();
-        int time = (subtitles.size() == 0 ? delay : delay * subtitles.size()) - 1;
+        int time = (subtitles.isEmpty() ? delay : delay * subtitles.size()) - 1;
         try {
             WrapperPlayServerTitle resetPacket = new WrapperPlayServerTitle();
             resetPacket.setAction(EnumWrappers.TitleAction.RESET);

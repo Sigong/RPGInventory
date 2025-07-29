@@ -96,7 +96,7 @@ public class ItemUtils {
         }
 
         NbtCompound nbt = NbtFactoryMirror.fromItemCompound(item);
-        return nbt.containsKey(tag);
+        return nbt != null && nbt.containsKey(tag);
     }
 
     public static boolean isItemHasDurability(ItemStack item) {

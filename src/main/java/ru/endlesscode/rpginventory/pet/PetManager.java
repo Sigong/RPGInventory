@@ -18,7 +18,14 @@
 
 package ru.endlesscode.rpginventory.pet;
 
-import com.comphenix.protocol.wrappers.nbt.NbtCompound;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -47,6 +54,9 @@ import org.bukkit.metadata.MetadataValue;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import com.comphenix.protocol.wrappers.nbt.NbtCompound;
+
 import ru.endlesscode.rpginventory.RPGInventory;
 import ru.endlesscode.rpginventory.compat.MaterialCompat;
 import ru.endlesscode.rpginventory.compat.VersionHandler;
@@ -62,14 +72,6 @@ import ru.endlesscode.rpginventory.utils.Log;
 import ru.endlesscode.rpginventory.utils.NbtFactoryMirror;
 import ru.endlesscode.rpginventory.utils.ProfileUtils;
 import ru.endlesscode.rpginventory.utils.SafeEnums;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by OsipXD on 26.08.2015
@@ -482,7 +484,7 @@ public class PetManager {
     }
 
     static void addGlow(@NotNull ItemMeta meta) {
-        meta.addEnchant(Enchantment.DURABILITY, 88, true);
+        meta.addEnchant(Enchantment.UNBREAKING, 88, true);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
     }
 

@@ -18,19 +18,19 @@
 
 package ru.endlesscode.rpginventory.utils;
 
-import com.comphenix.protocol.utility.MinecraftReflection;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import ru.endlesscode.inspector.report.Reporter;
-import ru.endlesscode.rpginventory.RPGInventory;
+
+import com.comphenix.protocol.utility.MinecraftReflection;
+
 import ru.endlesscode.rpginventory.inventory.InventoryManager;
 import ru.endlesscode.rpginventory.pet.PetManager;
 import ru.endlesscode.rpginventory.pet.PetType;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 /**
  * Created by OsipXD on 02.12.2015

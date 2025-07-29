@@ -18,15 +18,6 @@
 
 package ru.endlesscode.rpginventory.misc;
 
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.reflect.TypeToken;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
-import ru.endlesscode.rpginventory.utils.Log;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +30,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
+
+import ru.endlesscode.rpginventory.utils.Log;
 
 /**
  * Check for updates on EndlessCode for RPGInventory.
@@ -59,6 +61,7 @@ import java.util.logging.Level;
 
 // FIXME: Need to write own updater instead of this crap
 public class Updater {
+    
 
     /* Constants */
 
@@ -166,6 +169,7 @@ public class Updater {
         }
     }
 
+    
     /**
      * Get the result of the update process.
      *
@@ -219,7 +223,7 @@ public class Updater {
     private boolean versionCheck() {
         final String title = this.versionName;
         if (this.type != UpdateType.NO_VERSION_CHECK) {
-            final String localVersion = this.plugin.getDescription().getVersion();
+            final String localVersion = this.plugin.getPluginMeta().getVersion();
             if (title.split(DELIMITER).length == 2) {
                 // Get the newest file's version number
                 final String remoteVersion = title.split(DELIMITER)[1].split(" ")[0];
@@ -231,8 +235,8 @@ public class Updater {
                 }
             } else {
                 // The file's name did not contain the string 'vVersion'
-                final String authorInfo = this.plugin.getDescription().getAuthors().isEmpty() ? "" : " (" + this.plugin.getDescription().getAuthors().get(0) + ")";
-                this.plugin.getLogger().warning("The author of this plugin" + authorInfo + " has misconfigured their Auto Update system");
+                final String authorInfo = this.plugin.getPluginMeta().getAuthors().isEmpty() ? "" : " (" + this.plugin.getPluginMeta().getAuthors().get(0) + ")";
+                this.plugin.getLogger().warning(String.format("The author of this plugin %s has misconfigured their Auto Update system", authorInfo));
                 this.plugin.getLogger().warning("File versions should follow the format 'PluginName vVERSION'");
                 this.plugin.getLogger().warning("Please notify the author of this error.");
                 this.result = Updater.UpdateResult.FAIL_NOVERSION;
@@ -306,6 +310,11 @@ public class Updater {
     }
 
     private boolean tryToRead() throws IOException {
+                
+        if (HOST.equals("http://rpginventory.endlesscode.ru")) {
+            Log.s("This is dead plugin, expect no updates at all.");
+            return false;
+        }
         final URLConnection conn = this.url.openConnection();
         conn.setConnectTimeout(5000);
 

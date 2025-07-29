@@ -18,10 +18,8 @@
 
 package ru.endlesscode.rpginventory;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
-import org.bstats.bukkit.Metrics;
+import java.nio.file.Path;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -32,8 +30,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.endlesscode.inspector.bukkit.command.TrackedCommandExecutor;
-import ru.endlesscode.inspector.bukkit.plugin.PluginLifecycle;
+
+import com.comphenix.protocol.ProtocolLibrary;
+
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 import ru.endlesscode.inspector.bukkit.scheduler.TrackedBukkitRunnable;
 import ru.endlesscode.mimic.Mimic;
 import ru.endlesscode.mimic.MimicApiLevel;
@@ -43,7 +44,12 @@ import ru.endlesscode.rpginventory.compat.VersionHandler;
 import ru.endlesscode.rpginventory.compat.mimic.RPGInventoryItemsRegistry;
 import ru.endlesscode.rpginventory.compat.mimic.RPGInventoryPlayerInventory;
 import ru.endlesscode.rpginventory.compat.mypet.MyPetManager;
-import ru.endlesscode.rpginventory.event.listener.*;
+import ru.endlesscode.rpginventory.event.listener.ArmorEquipListener;
+import ru.endlesscode.rpginventory.event.listener.ElytraListener;
+import ru.endlesscode.rpginventory.event.listener.HandSwapListener;
+import ru.endlesscode.rpginventory.event.listener.PlayerListener;
+import ru.endlesscode.rpginventory.event.listener.ProfileListener;
+import ru.endlesscode.rpginventory.event.listener.WorldListener;
 import ru.endlesscode.rpginventory.inventory.InventoryLocker;
 import ru.endlesscode.rpginventory.inventory.InventoryManager;
 import ru.endlesscode.rpginventory.inventory.backpack.BackpackManager;
@@ -61,9 +67,6 @@ import ru.endlesscode.rpginventory.utils.Log;
 import ru.endlesscode.rpginventory.utils.PlayerUtils;
 import ru.endlesscode.rpginventory.utils.StringUtils;
 import ru.endlesscode.rpginventory.utils.Version;
-
-import java.nio.file.Path;
-import java.util.logging.Logger;
 
 public class RPGInventory extends JavaPlugin {
     private static RPGInventory instance;
@@ -152,7 +155,7 @@ public class RPGInventory extends JavaPlugin {
 
         hookPlaceholderApi();
         if (!loadModules()) {
-            getPluginLoader().disablePlugin(this);
+            Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
         loadPlayers();
@@ -199,7 +202,7 @@ public class RPGInventory extends JavaPlugin {
         // Load
         loadConfigs();
         if (!loadModules()) {
-            getPluginLoader().disablePlugin(this);
+            Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
         loadPlayers();
@@ -312,7 +315,7 @@ public class RPGInventory extends JavaPlugin {
 //    }
 
     private void savePlayers() {
-        if (this.getServer().getOnlinePlayers().size() == 0) {
+        if (this.getServer().getOnlinePlayers().isEmpty()) {
             return;
         }
 
@@ -323,7 +326,7 @@ public class RPGInventory extends JavaPlugin {
     }
 
     private void loadPlayers() {
-        if (this.getServer().getOnlinePlayers().size() == 0) {
+        if (this.getServer().getOnlinePlayers().isEmpty()) {
             return;
         }
 
@@ -383,7 +386,7 @@ public class RPGInventory extends JavaPlugin {
     }
 
     private void updateConfig() {
-        final Version version = Version.parseVersion(this.getDescription().getVersion());
+        final Version version = Version.parseVersion(this.getPluginMeta().getVersion());
 
         if (!Config.getConfig().contains("version")) {
             Config.getConfig().set("version", version.toString());

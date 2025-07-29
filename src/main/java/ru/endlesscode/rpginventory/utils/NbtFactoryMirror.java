@@ -1,5 +1,8 @@
 package ru.endlesscode.rpginventory.utils;
 
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.BukkitConverters;
@@ -7,8 +10,6 @@ import com.comphenix.protocol.wrappers.nbt.NbtBase;
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import com.comphenix.protocol.wrappers.nbt.NbtWrapper;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * For some kind of shit, ProtocolLib's method works wrong in version 4.4.0 But if I just copy
@@ -24,7 +25,11 @@ public final class NbtFactoryMirror {
     }
 
     public static NbtCompound fromItemCompound(ItemStack stack) {
-        return NbtFactory.asCompound(fromItemTag(stack));
+        NbtBase<?> tag = fromItemTag(stack);
+        if (tag == null) {
+            return null; // Or throw your own meaningful exception if needed
+        }
+        return NbtFactory.asCompound(tag);
     }
 
     public static void setItemTag(ItemStack stack, NbtCompound compound) {
@@ -36,6 +41,9 @@ public final class NbtFactoryMirror {
     private static NbtWrapper<?> fromItemTag(ItemStack stack) {
         checkItemStack(stack);
         StructureModifier<NbtBase<?>> modifier = getStackModifier(stack);
+        if (modifier.size() == 0) {
+            return null; // or handle default behavior if needed
+        }
         NbtBase<?> result = modifier.read(0);
         if (result == null) {
             result = com.comphenix.protocol.wrappers.nbt.NbtFactory.ofCompound("tag");

@@ -18,16 +18,10 @@
 
 package ru.endlesscode.rpginventory.compat.mypet;
 
-import de.Keyle.MyPet.MyPetApi;
-import de.Keyle.MyPet.api.WorldGroup;
-import de.Keyle.MyPet.api.entity.MyPet;
-import de.Keyle.MyPet.api.entity.StoredMyPet;
-import de.Keyle.MyPet.api.event.MyPetCallEvent;
-import de.Keyle.MyPet.api.event.MyPetCreateEvent;
-import de.Keyle.MyPet.api.event.MyPetRemoveEvent;
-import de.Keyle.MyPet.api.player.MyPetPlayer;
-import de.Keyle.MyPet.api.repository.PlayerManager;
-import de.Keyle.MyPet.api.repository.RepositoryCallback;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -41,6 +35,17 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import de.Keyle.MyPet.MyPetApi;
+import de.Keyle.MyPet.api.WorldGroup;
+import de.Keyle.MyPet.api.entity.MyPet;
+import de.Keyle.MyPet.api.entity.StoredMyPet;
+import de.Keyle.MyPet.api.event.MyPetCallEvent;
+import de.Keyle.MyPet.api.event.MyPetCreateEvent;
+import de.Keyle.MyPet.api.event.MyPetRemoveEvent;
+import de.Keyle.MyPet.api.player.MyPetPlayer;
+import de.Keyle.MyPet.api.repository.PlayerManager;
+import de.Keyle.MyPet.api.repository.RepositoryCallback;
 import ru.endlesscode.inspector.bukkit.scheduler.TrackedBukkitRunnable;
 import ru.endlesscode.rpginventory.RPGInventory;
 import ru.endlesscode.rpginventory.compat.MaterialCompat;
@@ -54,10 +59,6 @@ import ru.endlesscode.rpginventory.inventory.slot.SlotManager;
 import ru.endlesscode.rpginventory.utils.ItemUtils;
 import ru.endlesscode.rpginventory.utils.Log;
 import ru.endlesscode.rpginventory.utils.PlayerUtils;
-
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Created by Keyle on 21.05.2016

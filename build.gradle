@@ -11,6 +11,13 @@ group = 'ru.endlesscode.rpginventory'
 version = pluginVersion
 description = pluginDesc
 
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 bukkit {
     apiVersion = '1.21.1'
 
@@ -63,9 +70,11 @@ repositories {
 //    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
 //    maven { url = 'https://oss.sonatype.org/content/repositories/central' }
 
-    maven {
-        url "https://repo.purpurmc.org/snapshots"
+    flatDir {
+        dirs 'libs'
     }
+    mavenCentral()
+    maven { url "https://repo.purpurmc.org/snapshots" }
 
     def phoenixDevRepo = maven {
         name = "phoenixDev"
@@ -120,10 +129,34 @@ shadowJar {
 def inspectorVersion = "0.12.1"
 
 dependencies {
+
+
+
+
+    //   NEW ONES 
+    implementation 'org.yaml:snakeyaml:2.2'                // For ReaderException
+    implementation 'com.google.code.gson:gson:2.10.1'      // For Gson, TypeToken, SerializedName
+    implementation 'com.google.guava:guava:32.1.2-jre'     // For Optional
+    compileOnly 'net.md-5:bungeecord-api:1.20-R0.1-SNAPSHOT' // For ChatColor, BaseComponent
+
+    // Adventure API (for Audience, HoverEventSource, Sound, Translatable, Keyed, etc.)
+    implementation 'net.kyori:adventure-api:4.14.0'
+
+    // If you use Adventure platform for Bukkit
+    compileOnly 'net.kyori:adventure-platform-bukkit:4.3.2'
+
+
+
+
+
+
+
+
+
     //compileOnly(spigotApi())
     //compileOnly 'org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT' // The Spigot API with no shadowing. Requires the OSS repo.
 
-    compileOnly("org.purpurmc.purpur:purpur-api:1.21.1-R0.1-SNAPSHOT")
+    compileOnly name: 'purpur-api-1.21-R0.1-20240705.040837-23'
 
     compileOnly('com.github.MilkBowl:VaultAPI:1.7.1') {
         exclude group: 'org.bukkit'
