@@ -509,6 +509,7 @@ public class PetManager {
         }
 
         NbtCompound nbt = NbtFactoryMirror.fromItemCompound(item.clone());
+        if (nbt == null) return 0L;
         return nbt.containsKey(DEATH_TIME_TAG) ? nbt.getLong(DEATH_TIME_TAG) : 0L;
     }
 

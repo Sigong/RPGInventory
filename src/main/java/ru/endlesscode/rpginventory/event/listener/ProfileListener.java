@@ -1,11 +1,10 @@
 package ru.endlesscode.rpginventory.event.listener;
 
-import fr.phoenixdevt.profiles.event.ProfileSelectEvent;
-import fr.phoenixdevt.profiles.event.ProfileUnloadEvent;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+
+import fr.phoenixdevt.profiles.event.ProfileSelectEvent;
+import fr.phoenixdevt.profiles.event.ProfileUnloadEvent;
 import ru.endlesscode.rpginventory.inventory.InventoryManager;
 
 public class ProfileListener implements Listener{

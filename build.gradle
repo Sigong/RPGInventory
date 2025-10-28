@@ -1,20 +1,57 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-    id 'ru.endlesscode.bukkitgradle' version '0.10.1'
-    id 'com.github.ben-manes.versions' version "0.42.0"
-    id 'jacoco'
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.bukkit)
+    alias(libs.plugins.versions)
+    id('jacoco')
 }
 
 group = 'ru.endlesscode.rpginventory'
 version = pluginVersion
 description = pluginDesc
 
+def javaVersion = 21
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion = JavaLanguageVersion.of(javaVersion)
+    }
+    sourceCompatibility = JavaVersion.toVersion(javaVersion)
+    targetCompatibility = JavaVersion.toVersion(javaVersion)
+}
+
+// Configure Java toolchain for all tasks
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = javaVersion
+    javaCompiler = javaToolchains.compilerFor {
+        languageVersion = JavaLanguageVersion.of(javaVersion)
+    }
+}
+
+tasks.withType(Jar).configureEach {
+    manifest {
+        attributes(
+            'Build-Jdk': "${System.getProperty('java.version')}",
+            'Build-Jdk-Spec': "${javaVersion}",
+            'Multi-Release': 'true'
+        )
+    }
+}
+
+allprojects {
+    apply plugin: 'java'
+    
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(javaVersion)
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = javaVersion
     }
 }
 
@@ -24,8 +61,8 @@ bukkit {
     meta {
         name.set("RPGInventory")
         main.set("${group}.RPGInventory")
-        apiVersion.set("1.14")
-        authors.set(["osipxd", "EndlessCode Group"])
+        apiVersion.set("1.19")
+        authors.set(["osipxd", "EndlessCode Group", "noon", "XXX10Tacles"])
     }
 
     server {
@@ -36,7 +73,6 @@ bukkit {
 
 // Replace sentry credentials in code
 def processSources = tasks.register("processSource", Sync) {
-    // The key should be declared in ~/.gradle/gradle.properties
     def dsn = findProperty("rpginvSentryDsn") ?: ""
 
     from(sourceSets.main.java)
@@ -51,145 +87,118 @@ compileJava {
 
 repositories {
     mavenCentral()
-    //spigot()
-    dmulloy2()
-    md5()
-    jitpack()
+    
+    exclusiveContent {
+        forRepository {
+            maven {
+                url = uri('https://hub.spigotmc.org/nexus/content/repositories/snapshots/')
+            }
+        }
+        filter {
+            includeGroup 'org.bukkit'
+            includeGroup 'org.spigotmc'
+        }
+    }
+    
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'githubPackages'
+                url = uri('https://maven.pkg.github.com/MyPetORG/MyPet')
+                credentials(PasswordCredentials)
+            }
+        }
+        filter {
+            includeGroup 'de.keyle'
+        }
+    }
 
-//    maven {
-//        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
-//
-//        // As of Gradle 5.1, you can limit this to only those
-//        // dependencies you expect from it
-//        content {
-//            includeGroup 'org.bukkit'
-//            includeGroup 'org.spigotmc'
-//        }
-//    }
-//
-//    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
-//    maven { url = 'https://oss.sonatype.org/content/repositories/central' }
-
+    maven {
+        name = 'phoenixDev'
+        url = uri('https://nexus.phoenixdevt.fr/repository/maven-public/')
+    }
+    
+    maven {
+        name = 'placeholderAPI'
+        url = uri('https://repo.extendedclip.com/releases/')
+    }
+    
+    maven {
+        url = uri('https://oss.sonatype.org/content/repositories/snapshots')
+    }
+    
+    maven {
+        url = uri('https://repo.purpurmc.org/snapshots')
+    }
+    
     flatDir {
         dirs 'libs'
     }
-    mavenCentral()
-    maven { url "https://repo.purpurmc.org/snapshots" }
-
-    def phoenixDevRepo = maven {
-        name = "phoenixDev"
-        url = uri("https://nexus.phoenixdevt.fr/repository/maven-public/")
-    }
-
-    // You should configure credentials for this repo
-    def myPetRepo = maven {
-        name = "githubPackages"
-        url = uri("https://maven.pkg.github.com/MyPetORG/MyPet")
-        credentials(PasswordCredentials)
-    }
-
-    exclusiveContent {
-        forRepositories(myPetRepo)
-        filter { includeGroup("de.keyle") }
-    }
-
-    def placeholderapi = maven {
-        name = "placeholderAPI"
-        url = 'https://repo.extendedclip.com/releases/'
-    }
 }
 
-shadowJar {
-    dependencies {
-        exclude(dependency("com.google.code.gson:gson:.*"))
-        exclude(dependency("org.jetbrains:annotations:.*"))
-    }
 
-    exclude("DebugProbesKt.bin")
-    exclude("META-INF/proguard/**")
-    exclude("META-INF/native-image/**")
 
+
+tasks.shadowJar {
     minimize()
+    configurations = [project.configurations.runtimeClasspath]
+    
+    destinationDirectory = file('build/libs')
+    archiveClassifier = 'all'
+    mergeServiceFiles()
+    
+    dependencies {
+        exclude(dependency('com.google.code.gson:gson:.*'))
+        exclude(dependency('org.jetbrains:annotations:.*'))
+    }
 
-    def shadowPackage = "shade.ru.endlesscode.rpginventory"
-    relocate "com.comphenix.packetwrapper", "${shadowPackage}.packetwrapper"
+    exclude('DebugProbesKt.bin')
+    exclude('META-INF/proguard/**')
+    exclude('META-INF/native-image/**')
 
-    // inspector
-    relocate "ru.endlesscode.inspector", "${shadowPackage}.inspector"
-    relocate "kotlinx", "${shadowPackage}.kotlinx"
-    relocate "kotlin", "${shadowPackage}.kotlin"
 
-    // inspector-sentry-reporter
-    relocate "io.sentry", "${shadowPackage}.sentry"
-
-    // bstats
-    relocate "org.bstats", "${shadowPackage}.bstats"
+    def shadowPackage = 'shade.ru.endlesscode.rpginventory'
+    relocate('com.comphenix.packetwrapper', "${shadowPackage}.packetwrapper")
+    relocate('ru.endlesscode.inspector', "${shadowPackage}.inspector")
+    relocate('kotlinx', "${shadowPackage}.kotlinx")
+    relocate('kotlin', "${shadowPackage}.kotlin")
+    relocate('io.sentry', "${shadowPackage}.sentry")
+    relocate('org.bstats', "${shadowPackage}.bstats")
 }
-
-def inspectorVersion = "0.12.1"
 
 dependencies {
+    implementation(libs.snakeyaml)
+    implementation(libs.gson)
+    implementation(libs.guava)
+    compileOnly(libs.bungeecord.chat)
+    
+    implementation(platform('net.kyori:adventure-bom:4.14.0'))
+    implementation('net.kyori:adventure-api')
+    compileOnly('net.kyori:adventure-platform-bukkit:4.3.2')
 
+    compileOnly(name: 'purpur-api-1.21-R0.1-20240705.040837-23')
 
-
-
-    //   NEW ONES 
-    implementation 'org.yaml:snakeyaml:2.2'                // For ReaderException
-    implementation 'com.google.code.gson:gson:2.10.1'      // For Gson, TypeToken, SerializedName
-    implementation 'com.google.guava:guava:32.1.2-jre'     // For Optional
-    compileOnly 'net.md-5:bungeecord-api:1.20-R0.1-SNAPSHOT' // For ChatColor, BaseComponent
-
-    // Adventure API (for Audience, HoverEventSource, Sound, Translatable, Keyed, etc.)
-    implementation 'net.kyori:adventure-api:4.14.0'
-
-    // If you use Adventure platform for Bukkit
-    compileOnly 'net.kyori:adventure-platform-bukkit:4.3.2'
-
-
-
-
-
-
-
-
-
-    //compileOnly(spigotApi())
-    //compileOnly 'org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT' // The Spigot API with no shadowing. Requires the OSS repo.
-
-    compileOnly name: 'purpur-api-1.21-R0.1-20240705.040837-23'
-
-    compileOnly('com.github.MilkBowl:VaultAPI:1.7.1') {
-        exclude group: 'org.bukkit'
+    compileOnly(libs.vault) {
+        exclude(group: 'org.bukkit')
     }
-    compileOnly('com.comphenix.protocol:ProtocolLib:4.8.0')
+    compileOnly(libs.protocollib)
     compileOnly('org.jetbrains:annotations:23.0.0')
-    compileOnly 'me.clip:placeholderapi:2.11.6'
-    compileOnly('de.keyle:mypet:3.12-SNAPSHOT')
-    compileOnly('ru.endlesscode.mimic:mimic-bukkit-api:0.8.0')
-    implementation("ru.endlesscode.inspector:inspector-bukkit:$inspectorVersion")
-    implementation("ru.endlesscode.inspector:inspector-sentry-reporter:$inspectorVersion")
-    implementation("ru.endlesscode.inspector:sentry-bukkit:$inspectorVersion")
-    implementation('com.comphenix.packetwrapper:PacketWrapper:1.13-R0.1-SNAPSHOT')
-    implementation('org.bstats:bstats-bukkit:3.0.0')
-    testImplementation('junit:junit:4.13.2')
-    testImplementation('org.mockito:mockito-core:4.4.0')
+    compileOnly(libs.placeholderapi)
+    compileOnly(libs.mypet)
+    compileOnly(libs.mimic)
+    
+    implementation(libs.inspector.bukkit)
+    implementation(libs.inspector.sentry)
+    implementation(libs.inspector.sentry.bukkit)
+    implementation(name: 'PacketWrapper')
+    implementation(libs.bstats)
+    
+    testImplementation(libs.junit)
+    testImplementation(libs.mockito)
 
-    compileOnly('fr.phoenixdevt:Profile-API:1.1')
-    compileOnly('io.lumine:MythicLib-dist:1.6.2-SNAPSHOT')
+    compileOnly(libs.profile.api)
+    compileOnly(libs.mythiclib)
 }
 
-//jacocoTestReport {
-//    reports {
-//        xml.enabled = true
-//        html.enabled = true
-//    }
-//}
-
-// Add custom tasks
 tasks.assemble.dependsOn tasks.shadowJar
 tasks.check.dependsOn tasks.jacocoTestReport
-
-// Add ProGuard minimization task
-// TODO: minimized Jar not works, fix it
-//apply(from: file("proguard.gradle"))
-//apply(from: file("gradle/publish.gradle"))

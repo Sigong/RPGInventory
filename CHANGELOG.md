@@ -14,6 +14,17 @@ X changes total
 
 ## [Unreleased]
 
+
+## [2.4.2] (2025-09-30)
+
+### Added
+
+- 1.21 Support (Experimental).
+- Tabcomplete.
+
+### Fixed (1 changes)
+- Java compability.
+
 ## [2.4.1] (2022-04-19)
 
 ### Added

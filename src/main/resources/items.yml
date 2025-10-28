@@ -1,3 +1,5 @@
+# Better use mimic + some item system isntead of RPGInventory native stats system.
+
 items:
   assassin-gloves:
     texture: DIAMOND_HOE:24

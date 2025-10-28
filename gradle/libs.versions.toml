@@ -1,0 +1,50 @@
+[versions]
+snakeyaml = "2.2"
+gson = "2.10.1"
+guava = "32.1.2-jre"
+bungeecord = "1.20-R0.1"
+adventure = "4.14.0"
+adventure-platform = "4.3.2"
+vault = "1.7.1"
+protocollib = "4.8.0"
+placeholderapi = "2.11.6"
+mypet = "3.12-SNAPSHOT"
+mimic = "0.8.0"
+inspector = "0.12.1"
+bstats = "3.0.0"
+junit = "4.13.2"
+mockito = "4.4.0"
+profile-api = "1.1"
+mythiclib = "1.6.2-SNAPSHOT"
+
+[libraries]
+snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+bungeecord-chat = { module = "net.md-5:bungeecord-chat", version.ref = "bungeecord" }
+
+adventure-bom = { module = "net.kyori:adventure-bom", version.ref = "adventure" }
+adventure-api = { module = "net.kyori:adventure-api" }
+adventure-platform-bukkit = { module = "net.kyori:adventure-platform-bukkit", version.ref = "adventure-platform" }
+
+vault = { module = "com.github.MilkBowl:VaultAPI", version.ref = "vault" }
+protocollib = { module = "com.comphenix.protocol:ProtocolLib", version.ref = "protocollib" }
+placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholderapi" }
+mypet = { module = "de.keyle:mypet", version.ref = "mypet" }
+mimic = { module = "ru.endlesscode.mimic:mimic-bukkit-api", version.ref = "mimic" }
+
+inspector-bukkit = { module = "ru.endlesscode.inspector:inspector-bukkit", version.ref = "inspector" }
+inspector-sentry = { module = "ru.endlesscode.inspector:inspector-sentry-reporter", version.ref = "inspector" }
+inspector-sentry-bukkit = { module = "ru.endlesscode.inspector:sentry-bukkit", version.ref = "inspector" }
+
+bstats = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
+junit = { module = "junit:junit", version.ref = "junit" }
+mockito = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+
+profile-api = { module = "fr.phoenixdevt:Profile-API", version.ref = "profile-api" }
+mythiclib = { module = "io.lumine:MythicLib-dist", version.ref = "mythiclib" }
+
+[plugins]
+shadow = { id = "com.gradleup.shadow", version = "8.3.5" }
+bukkit = { id = "ru.endlesscode.bukkitgradle", version = "0.10.1" }
+versions = { id = "com.github.ben-manes.versions", version = "0.50.0" }

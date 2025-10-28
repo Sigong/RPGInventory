@@ -1,11 +1,10 @@
 package ru.endlesscode.rpginventory.utils;
 
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import java.util.UUID;
+
 import org.bukkit.OfflinePlayer;
 
-import java.util.UUID;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 
 public class ProfileUtils {
     private ProfileUtils(){}

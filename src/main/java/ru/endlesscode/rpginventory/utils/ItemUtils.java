@@ -18,8 +18,6 @@
 
 package ru.endlesscode.rpginventory.utils;
 
-import com.comphenix.protocol.utility.MinecraftReflection;
-import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -27,6 +25,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import com.comphenix.protocol.utility.MinecraftReflection;
+import com.comphenix.protocol.wrappers.nbt.NbtCompound;
+
 import ru.endlesscode.rpginventory.inventory.backpack.BackpackManager;
 import ru.endlesscode.rpginventory.inventory.backpack.BackpackType;
 import ru.endlesscode.rpginventory.item.CustomItem;
@@ -81,7 +83,7 @@ public class ItemUtils {
         }
 
         NbtCompound nbt = NbtFactoryMirror.fromItemCompound(bukkitItem);
-        return nbt.containsKey(tag) ? nbt.getString(tag) : defaultValue;
+        return nbt != null && nbt.containsKey(tag) ? nbt.getString(tag) : defaultValue;
     }
 
     @Contract("null, _ -> false")

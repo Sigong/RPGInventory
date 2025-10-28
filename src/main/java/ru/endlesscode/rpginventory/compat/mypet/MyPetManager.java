@@ -67,6 +67,7 @@ import ru.endlesscode.rpginventory.utils.PlayerUtils;
  */
 
 public class MyPetManager implements Listener {
+    
     private static final String MYPET_TAG = "mypet.uuid";
 
     public static boolean init(@NotNull RPGInventory plugin) {

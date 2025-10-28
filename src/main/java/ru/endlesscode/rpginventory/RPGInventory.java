@@ -66,6 +66,7 @@ import ru.endlesscode.rpginventory.resourcepack.ResourcePackModule;
 import ru.endlesscode.rpginventory.utils.Log;
 import ru.endlesscode.rpginventory.utils.PlayerUtils;
 import ru.endlesscode.rpginventory.utils.StringUtils;
+import ru.endlesscode.rpginventory.utils.TabComplete;
 import ru.endlesscode.rpginventory.utils.Version;
 
 public class RPGInventory extends JavaPlugin {
@@ -145,7 +146,7 @@ public class RPGInventory extends JavaPlugin {
 
         // Init logger
 //        Log.init(Logger.getLogger("RPGInventory"));
-
+        getCommand("rpginventory").setTabCompleter(new TabComplete());
         if (!initMimicSystems()) {
             return;
         }

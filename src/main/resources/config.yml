@@ -11,8 +11,8 @@ enabled: true
 # Language (must be same as the file name in the folder /lang)
 language: en
 
-# Check update system
-check-update: true
+# Check update system // Plugin is dead, better disable to avoid checking for nothing.
+check-update: false
 
 # Worlds settings
 worlds:
