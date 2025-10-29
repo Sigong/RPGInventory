@@ -31,7 +31,6 @@ import ru.endlesscode.rpginventory.event.ItemCommandEvent;
 import ru.endlesscode.rpginventory.inventory.InventoryManager;
 import ru.endlesscode.rpginventory.inventory.backpack.BackpackManager;
 import ru.endlesscode.rpginventory.item.ItemManager;
-import ru.endlesscode.rpginventory.pet.PetManager;
 import ru.endlesscode.rpginventory.utils.ItemUtils;
 import ru.endlesscode.rpginventory.utils.StringUtils;
 
@@ -56,12 +55,7 @@ final class RPGInventoryCommandExecutor implements CommandExecutor {
 
         if (perms.has(sender, "rpginventory.admin")) {
             switch (subCommand.charAt(0)) {
-                case 'p': // pets
-                    this.tryToGivePet(sender, args);
-                    return true;
-                case 'f': // food
-                    this.tryToGiveFood(sender, args);
-                    return true;
+
                 case 'i': // items
                     this.tryToGiveItem(sender, args);
                     return true;
@@ -91,27 +85,7 @@ final class RPGInventoryCommandExecutor implements CommandExecutor {
         return true;
     }
 
-    private void tryToGivePet(CommandSender sender, String[] args) {
-        if (args.length == 1) {
-            this.printPetsList(sender);
-        } else if (args.length >= 3 && validatePlayer(sender, args[1])) {
-            this.givePet(sender, args[1], args[2]);
-            return;
-        }
 
-        sender.sendMessage(StringUtils.coloredLine("&3Usage: &6/rpginv pet [&eplayer&6] [&epetId&6]"));
-    }
-
-    private void tryToGiveFood(CommandSender sender, String[] args) {
-        if (args.length == 1) {
-            this.printFoodList(sender);
-        } else if (args.length >= 3 && validatePlayer(sender, args[1])) {
-            this.giveFood(sender, args[1], args[2], args.length > 3 ? args[3] : "1");
-            return;
-        }
-
-        sender.sendMessage(StringUtils.coloredLine("&3Usage: &6/rpginv food [&eplayer&6] [&efoodId&6] (&eamount&6)"));
-    }
 
     private void tryToGiveItem(CommandSender sender, String[] args) {
         if (args.length == 1) {
@@ -133,38 +107,6 @@ final class RPGInventoryCommandExecutor implements CommandExecutor {
         }
 
         sender.sendMessage(StringUtils.coloredLine("&3Usage: &6/rpginv bp [&eplayer&6] [&eitemId&6]"));
-    }
-
-    private void givePet(@NotNull CommandSender sender, String playerName, String petId) {
-        final Player player = RPGInventory.getInstance().getServer().getPlayer(playerName);
-        final ItemStack petItem = PetManager.getPetItem(petId);
-        final String prefix = "Pet '" + petId + "'";
-
-        if (ItemUtils.isEmpty(petItem)) {
-            sender.sendMessage(StringUtils.coloredLine("&c" + prefix + " not found!"));
-            this.printPetsList(sender);
-        } else {
-            this.giveItemToPlayer(sender, player, petItem, prefix);
-        }
-    }
-
-    private void giveFood(@NotNull CommandSender sender, String playerName, String foodId, @NotNull String stringAmount) {
-        final Player player = RPGInventory.getInstance().getServer().getPlayer(playerName);
-        final ItemStack foodItem = PetManager.getFoodItem(foodId);
-        final String prefix = "Food '" + foodId + "'";
-
-        if (ItemUtils.isEmpty(foodItem)) {
-            sender.sendMessage(StringUtils.coloredLine("&c" + prefix + " not found!"));
-            this.printFoodList(sender);
-        } else {
-            try {
-                int amount = Integer.parseInt(stringAmount);
-                foodItem.setAmount(amount);
-                this.giveItemToPlayer(sender, player, foodItem, prefix);
-            } catch (NumberFormatException e) {
-                sender.sendMessage(StringUtils.coloredLine("&cThe amount must be a number!"));
-            }
-        }
     }
 
     private void giveItem(@NotNull CommandSender sender, String playerName, String itemId) {
@@ -193,10 +135,6 @@ final class RPGInventoryCommandExecutor implements CommandExecutor {
         }
     }
 
-    private void printPetsList(@NotNull CommandSender sender) {
-        printList(sender, PetManager.getPetList(), "Pets");
-    }
-
     private void giveItemToPlayer(@NotNull CommandSender sender, Player player, ItemStack item, String prefix) {
         String message;
 
@@ -213,9 +151,6 @@ final class RPGInventoryCommandExecutor implements CommandExecutor {
         sender.sendMessage(StringUtils.coloredLine(message));
     }
 
-    private void printFoodList(@NotNull CommandSender sender) {
-        this.printList(sender, PetManager.getFoodList(), "Food");
-    }
 
     private void printItemsList(@NotNull CommandSender sender) {
         this.printList(sender, ItemManager.getItemList(), "Items");
@@ -232,7 +167,6 @@ final class RPGInventoryCommandExecutor implements CommandExecutor {
 
     private void onCommandList(@NotNull CommandSender sender) {
         sender.sendMessage(StringUtils.coloredLine("&cCommand &6/rpginv list [&etype&6]&c was removed."));
-        sender.sendMessage(StringUtils.coloredLine("&3Use &6/rpginv [&epets&6|&efood&6|&eitems&6|&ebackpacks&6]&3 instead."));
     }
 
     private void reloadPlugin(CommandSender sender) {
@@ -253,9 +187,6 @@ final class RPGInventoryCommandExecutor implements CommandExecutor {
 
         if (RPGInventory.getPermissions().has(sender, "rpginventory.admin")) {
             sender.sendMessage(StringUtils.coloredLine("&6rpginv reload &7- reload config"));
-            sender.sendMessage(StringUtils.coloredLine("&6rpginv [&epets&6|&efood&6|&eitems&6|&ebackpacks&6] &7- show list of pets, items etc."));
-            sender.sendMessage(StringUtils.coloredLine("&6rpginv food [&eplayer&6] [&efoodId&6] (&eamount&6) &7- gives food to player"));
-            sender.sendMessage(StringUtils.coloredLine("&6rpginv pet [&eplayer&6] [&epetId&6] &7- gives pet to player"));
             sender.sendMessage(StringUtils.coloredLine("&6rpginv item [&eplayer&6] [&eitemId&6] &7- gives item to player"));
             sender.sendMessage(StringUtils.coloredLine("&6rpginv bp [&eplayer&6] [&ebackpackId&6] &7- gives backpack to player"));
         }

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import ru.endlesscode.mimic.items.BukkitItemsRegistry;
 import ru.endlesscode.rpginventory.item.CustomItem;
 import ru.endlesscode.rpginventory.item.ItemManager;
+import ru.endlesscode.rpginventory.misc.config.Config;
 
 import java.util.Collection;
 
@@ -21,6 +22,11 @@ public class RPGInventoryItemsRegistry implements BukkitItemsRegistry {
     @Nullable
     @Override
     public ItemStack getItem(@NotNull String itemId, @Nullable Object payload, int amount) {
+        // When mimic-only is true, don't use built-in items
+        if (Config.getConfig().getBoolean("mimic-only", true)) {
+            return null;
+        }
+        
         ItemStack item = ItemManager.getItem(itemId);
         if (item.getType() != Material.AIR) {
             item.setAmount(amount);

@@ -233,7 +233,6 @@ public class Slot {
     public enum SlotType {
         GENERIC(true, true, false, true),
         ACTION(false, true, false, false),
-        PET(false, false, true, false),
         ARMOR(false, false, false, true),
         ACTIVE(true, false, false, true),
         BACKPACK(true, false, false, false),

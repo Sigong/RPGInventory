@@ -10,7 +10,7 @@ import org.bukkit.command.TabCompleter;
 
 public class TabComplete implements TabCompleter {
 
-    private final List<String> subcommands = Arrays.asList("open", "reload", "food", "pet", "item", "bp");
+    private final List<String> subcommands = Arrays.asList("open", "reload", "item", "bp");
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
@@ -27,7 +27,7 @@ public class TabComplete implements TabCompleter {
         } else if (args.length == 2) {
             // For subcommands that require a player name as second argument
             String firstArg = args[0].toLowerCase();
-            if (firstArg.equals("open") || firstArg.equals("food") || firstArg.equals("pet") || firstArg.equals("item") || firstArg.equals("bp")) {
+            if (firstArg.equals("open") || firstArg.equals("item") || firstArg.equals("bp")) {
                 // Suggest online player names
                 String partial = args[1].toLowerCase();
                 for (String playerName : sender.getServer().getOnlinePlayers().stream().map(p -> p.getName()).toList()) {
@@ -49,16 +49,7 @@ public class TabComplete implements TabCompleter {
                         completions.add(foodId);
                     }
                 }
-            } else if (firstArg.equals("pet")) {
-                // Suggest pet IDs
-                List<String> petIds = Arrays.asList("kitty", "puppy", "horse", "pig", "rare-wolf");  // <-- Replace with your actual pet IDs
-                String partial = args[2].toLowerCase();
-                for (String petId : petIds) {
-                    if (petId.startsWith(partial)) {
-                        completions.add(petId);
-                    }
-                }
-            } else if (firstArg.equals("item")) {
+            } else if (firstArg.equals("bp")) {
                 // Suggest item IDs
                 List<String> itemIds = Arrays.asList("ring-of-gods", "mysterious-amulet");  // <-- Replace with your actual item IDs
                 String partial = args[2].toLowerCase();

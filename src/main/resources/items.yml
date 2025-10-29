@@ -11,13 +11,6 @@ items:
     level: 4
     classes:
       - Assassin
-    stats:
-      - DAMAGE +5-10
-      - BOW_DAMAGE +2
-      - HAND_DAMAGE +3
-      - CRIT_CHANCE +2%
-      - SPEED +30%
-      - JUMP +4
   ring-of-gods:
     texture: DIAMOND_HOE:23
     name: "Ring of Gods"

@@ -76,7 +76,7 @@ public class ElytraListener implements Listener {
 
         if (event.isGliding()) {
             PlayerWrapper playerWrapper = InventoryManager.get(player);
-            playerWrapper.onStartGliding();
+            playerWrapper.onFall();
         }
     }
 

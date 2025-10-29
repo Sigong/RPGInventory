@@ -102,6 +102,10 @@ public class Texture {
 
     private static Texture parseLegacyMonsterEgg(ItemStack item, String entityType) {
         NbtCompound nbt = NbtFactoryMirror.fromItemCompound(item);
+        if (nbt == null) {
+            nbt = NbtFactory.ofCompound("tag");
+            NbtFactoryMirror.setItemTag(item, nbt);
+        }
         nbt.put(ItemUtils.ENTITY_TAG, NbtFactory.ofCompound("temp").put("id", entityType));
 
         return new Texture(item);
@@ -125,17 +129,31 @@ public class Texture {
             return new Texture(item);
         }
 
-        int textureData = -1;
+        // Try to parse as a number first for legacy support
         try {
-            textureData = Integer.parseInt(textureDataValue);
+            int textureData = Integer.parseInt(textureDataValue);
+            if (Config.texturesType == TexturesType.DAMAGE) {
+                return parseItemWithDurability(item, textureData);
+            }
+            return parseItemWithCustomModelData(item, textureData);
         } catch (NumberFormatException e) {
-            Log.w("Can''t parse texture modifier. Specify a number instead of \"{0}\"", textureData);
-        }
+            // Not a number, handle as an identifier
+            if (Config.texturesType != TexturesType.NAMED_IDENTIFIER) {
+                Log.w("Can''t parse texture modifier. For numeric values, specify a number. For named identifiers, set textures-type: named_identifier in config.yml. Value: \"{0}\"", textureDataValue);
+                return new Texture(item);
+            }
 
-        if (Config.texturesType == TexturesType.DAMAGE) {
-            return parseItemWithDurability(item, textureData);
+            // Handle different formats for named identifiers
+            if (!textureDataValue.contains(":") && !textureDataValue.contains("/")) {
+                // Simple format: just the variant name
+                // Use the item type as the base identifier
+                String baseItem = item.getType().getKey().toString();
+                return parseItemWithNamedIdentifier(item, baseItem + "/" + textureDataValue);
+            }
+
+            // Full format: either namespace:id, namespace:id/variant, or id/variant
+            return parseItemWithNamedIdentifier(item, textureDataValue);
         }
-        return parseItemWithCustomModelData(item, textureData);
     }
 
     private static Texture parseItemWithDurability(ItemStack item, int damage) {
@@ -166,4 +184,64 @@ public class Texture {
 
         return new Texture(item, customModelData);
     }
+
+    private static Texture parseItemWithNamedIdentifier(ItemStack item, String identifier) {
+        ItemMeta meta = item.getItemMeta();
+        assert meta != null;
+
+        meta.addItemFlags(ItemFlag.values());
+        
+        // Set the custom identifier using NBT
+        NbtCompound nbt = NbtFactoryMirror.fromItemCompound(item);
+        if (nbt == null) {
+            nbt = NbtFactory.ofCompound("tag");
+        }
+
+        // Parse the identifier (format can be: namespace:id, namespace:id/variant, or just id)
+        String namespace = "minecraft";
+        String id = identifier;
+        String variant = null;
+
+        if (identifier.contains(":")) {
+            String[] parts = identifier.split(":");
+            namespace = parts[0];
+            id = parts[1];
+        }
+        
+        if (id.contains("/")) {
+            String[] parts = id.split("/");
+            id = parts[0];
+            variant = parts[1];
+        }
+
+        // Support for CraftEngine/ModelEngine format
+        if (namespace.equals("craftengine") || namespace.equals("modelengine")) {
+            nbt.put("MODELENGINE", variant != null ? variant : id);
+            if (variant != null) {
+                // ModelEngine uses CustomModelData for variants
+                meta.setCustomModelData(calculateModelData(variant));
+            }
+        } else {
+            // Standard format
+            String fullId = namespace + ":" + id + (variant != null ? "/" + variant : "");
+            nbt.put("custom_item", fullId);
+            
+            // Support for generic resource pack custom models
+            if (variant != null) {
+                meta.setCustomModelData(calculateModelData(variant));
+            }
+        }
+
+        item.setItemMeta(meta);
+        NbtFactoryMirror.setItemTag(item, nbt);
+
+        return new Texture(item, -1); // Use -1 as we're not using numeric identifiers
+    }
+
+    private static int calculateModelData(String variant) {
+        // This is a simple hash function to generate consistent CustomModelData values
+        // You might want to adjust this based on your needs
+        return Math.abs(variant.hashCode()) % 999999;
+    }
 }
+

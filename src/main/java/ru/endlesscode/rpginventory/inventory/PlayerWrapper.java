@@ -25,7 +25,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -42,9 +41,7 @@ import ru.endlesscode.rpginventory.inventory.slot.SlotManager;
 import ru.endlesscode.rpginventory.item.CustomItem;
 import ru.endlesscode.rpginventory.item.ItemManager;
 import ru.endlesscode.rpginventory.misc.serialization.InventorySnapshot;
-import ru.endlesscode.rpginventory.pet.Attributes;
-import ru.endlesscode.rpginventory.pet.PetManager;
-import ru.endlesscode.rpginventory.pet.PetType;
+import ru.endlesscode.rpginventory.utils.Attributes;
 import ru.endlesscode.rpginventory.utils.ItemUtils;
 import ru.endlesscode.rpginventory.utils.Log;
 
@@ -72,8 +69,6 @@ public class PlayerWrapper implements InventoryHolder {
     private long timeWhenPreparedToBuy = 0;
     @Nullable
     private Backpack backpack = null;
-    private LivingEntity pet;
-
     @Nullable
     private ItemStack savedChestplate = null;
     private boolean falling = false;
@@ -226,18 +221,6 @@ public class PlayerWrapper implements InventoryHolder {
         this.backpack = backpack;
     }
 
-    @Nullable
-    public LivingEntity getPet() {
-        return pet;
-    }
-
-    public void setPet(LivingEntity pet) {
-        this.pet = pet;
-    }
-
-    public boolean hasPet() {
-        return pet != null;
-    }
 
     public OfflinePlayer getPlayer() {
         return player;
@@ -270,11 +253,6 @@ public class PlayerWrapper implements InventoryHolder {
         }
     }
 
-    public void onStartGliding() {
-        if (this.hasPet()) {
-            PetManager.despawnPet(player);
-        }
-    }
 
     public boolean isFalling() {
         return falling;
@@ -300,9 +278,6 @@ public class PlayerWrapper implements InventoryHolder {
 
         this.flying = false;
 
-        if (PetManager.isEnabled() && !this.hasPet()) {
-            PetManager.respawnPet(player.getPlayer());
-        }
     }
 
     public boolean isFlying() {
@@ -321,15 +296,6 @@ public class PlayerWrapper implements InventoryHolder {
 
         this.clearStats();
 
-        // Removing pet
-        if (PetManager.isEnabled()) {
-            PetManager.despawnPet(player);
-            Inventory inventory = this.inventory;
-            ItemStack petItem = inventory.getItem(PetManager.getPetSlotId());
-            if (petItem != null) {
-                inventory.setItem(PetManager.getPetSlotId(), PetType.clone(petItem));
-            }
-        }
     }
 
     public void updateStatsLater() {

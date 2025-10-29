@@ -14,6 +14,27 @@ X changes total
 
 ## [Unreleased]
 
+## [2.5] (2025-10-29)
+
+### Note
+
+- It was tested on Purpur-2152 (MC: 1.20.4), works fine so far, idk about others.
+
+### Added
+
+- Configs for mmoprofiles, to do not try to load if it's not enabled and mimic-only, to do not load default config.
+
+### Changed
+
+- Minimum api version from 14 to 19.
+
+### Fixed
+
+- Some depricated methods, not all tho.
+
+### Removed
+
+- Pets system fully.
 
 ## [2.4.2] (2025-09-30)
 
@@ -24,6 +45,12 @@ X changes total
 
 ### Fixed (1 changes)
 - Java compability.
+
+## [2.4.X] (2025-03-25)
+
+- Noon added some features like, mmoprofiles support, hex color codes, mmoitem skill usage in inventory. Also fixed bunch of stuff.
+
+### Added
 
 ## [2.4.1] (2022-04-19)
 

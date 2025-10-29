@@ -59,10 +59,10 @@ import ru.endlesscode.rpginventory.utils.Log;
  * @version 2.3
  */
 
-// FIXME: Need to write own updater instead of this crap
+
 public class Updater {
     
-
+ 
     /* Constants */
 
     // Remote file's title

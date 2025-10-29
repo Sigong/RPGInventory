@@ -1,4 +1,3 @@
-import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     alias(libs.plugins.shadow)
@@ -56,8 +55,6 @@ allprojects {
 }
 
 bukkit {
-    apiVersion = '1.21.1'
-
     meta {
         name.set("RPGInventory")
         main.set("${group}.RPGInventory")
@@ -71,19 +68,7 @@ bukkit {
     }
 }
 
-// Replace sentry credentials in code
-def processSources = tasks.register("processSource", Sync) {
-    def dsn = findProperty("rpginvSentryDsn") ?: ""
 
-    from(sourceSets.main.java)
-    inputs.property("dsn", dsn)
-    filter(ReplaceTokens, tokens: [sentry_dsn: dsn])
-    into("$buildDir/src")
-}
-
-compileJava {
-    source = processSources.get().outputs
-}
 
 repositories {
     mavenCentral()
@@ -97,19 +82,6 @@ repositories {
         filter {
             includeGroup 'org.bukkit'
             includeGroup 'org.spigotmc'
-        }
-    }
-    
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = 'githubPackages'
-                url = uri('https://maven.pkg.github.com/MyPetORG/MyPet')
-                credentials(PasswordCredentials)
-            }
-        }
-        filter {
-            includeGroup 'de.keyle'
         }
     }
 
@@ -184,7 +156,6 @@ dependencies {
     compileOnly(libs.protocollib)
     compileOnly('org.jetbrains:annotations:23.0.0')
     compileOnly(libs.placeholderapi)
-    compileOnly(libs.mypet)
     compileOnly(libs.mimic)
     
     implementation(libs.inspector.bukkit)

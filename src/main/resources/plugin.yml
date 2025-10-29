@@ -1,11 +1,13 @@
+name: RPGInventory
+main: ru.endlesscode.rpginventory.RPGInventory
+api-version: "1.19"
+version: 2.5.0
 depend:
   - ProtocolLib
   - Vault
 softdepend:
   - Mimic
-  - MyPet
   - PlaceholderAPI
-
 commands:
   rpginventory:
     description: RPGInventory command.
@@ -39,5 +41,4 @@ permissions:
     description: Player with this permission will not lose armor on dead
     default: op
   rpginventory.keep.rpginv:
-    description: Player with this permission will not lose items from RPGInventory on dead
-    default: op
+    description: Player with this pe

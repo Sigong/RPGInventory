@@ -23,14 +23,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import ru.endlesscode.rpginventory.RPGInventory;
-import ru.endlesscode.rpginventory.event.PetUnequipEvent;
 import ru.endlesscode.rpginventory.inventory.slot.Slot;
 import ru.endlesscode.rpginventory.inventory.slot.SlotManager;
 import ru.endlesscode.rpginventory.item.CustomItem;
 import ru.endlesscode.rpginventory.item.ItemManager;
-import ru.endlesscode.rpginventory.pet.PetManager;
-import ru.endlesscode.rpginventory.pet.PetType;
 import ru.endlesscode.rpginventory.utils.ItemUtils;
 import ru.endlesscode.rpginventory.utils.ProfileUtils;
 
@@ -115,23 +111,7 @@ public class InventorySaver {
                 }
             }
 
-            // Save pet
-            int petSlotId = PetManager.getPetSlotId();
-            if (PetManager.isEnabled() && inventory.getItem(petSlotId) != null) {
-                Slot petSlot = SlotManager.instance().getPetSlot();
-                ItemStack currentPetItem = inventory.getItem(petSlotId);
 
-                if (petSlot != null && currentPetItem != null && !petSlot.isCup(currentPetItem)) {
-                    ItemStack petItem = PetType.clone(currentPetItem);
-                    if (petSlot.isDrop()) {
-                        additionalDrops.add(petItem);
-                        RPGInventory.getInstance().getServer().getPluginManager().callEvent(new PetUnequipEvent(player));
-                        inventory.setItem(petSlotId, petSlot.getCup());
-                    } else {
-                        inventory.setItem(petSlotId, petItem);
-                    }
-                }
-            }
 
             for (Slot slot : SlotManager.instance().getPassiveSlots()) {
                 for (int slotId : slot.getSlotIds()) {

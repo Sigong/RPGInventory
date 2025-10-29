@@ -40,7 +40,6 @@ public class ConfigUpdater {
         }
 
         if (configVersion.compareTo("1.0.1") < 0) {
-            config.set("slots.pet", null);
             config.set("slots.crafting", null);
             config.set("slots.enabled", true);
             config.set("slots.level.spend", false);

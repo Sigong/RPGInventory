@@ -27,6 +27,6 @@ import java.math.BigDecimal;
  */
 public class Utils {
     public static double round(double a, int scale) {
-        return new BigDecimal(a).setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+        return BigDecimal.valueOf(a).setScale(scale, java.math.RoundingMode.HALF_UP).doubleValue();
     }
 }

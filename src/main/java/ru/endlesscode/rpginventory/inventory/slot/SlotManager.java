@@ -255,17 +255,6 @@ public class SlotManager {
     }
 
     @Nullable
-    public Slot getPetSlot() {
-        for (Slot slot : this.slots) {
-            if (slot.getSlotType() == Slot.SlotType.PET) {
-                return slot;
-            }
-        }
-
-        return null;
-    }
-
-    @Nullable
     public Slot getShieldSlot() {
         for (Slot slot : this.slots) {
             if (slot.getSlotType() == Slot.SlotType.SHIELD) {

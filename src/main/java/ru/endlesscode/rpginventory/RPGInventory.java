@@ -43,7 +43,6 @@ import ru.endlesscode.mimic.level.BukkitLevelSystem;
 import ru.endlesscode.rpginventory.compat.VersionHandler;
 import ru.endlesscode.rpginventory.compat.mimic.RPGInventoryItemsRegistry;
 import ru.endlesscode.rpginventory.compat.mimic.RPGInventoryPlayerInventory;
-import ru.endlesscode.rpginventory.compat.mypet.MyPetManager;
 import ru.endlesscode.rpginventory.event.listener.ArmorEquipListener;
 import ru.endlesscode.rpginventory.event.listener.ElytraListener;
 import ru.endlesscode.rpginventory.event.listener.HandSwapListener;
@@ -61,8 +60,6 @@ import ru.endlesscode.rpginventory.misc.Updater;
 import ru.endlesscode.rpginventory.misc.config.Config;
 import ru.endlesscode.rpginventory.misc.config.ConfigUpdater;
 import ru.endlesscode.rpginventory.misc.serialization.Serialization;
-import ru.endlesscode.rpginventory.pet.PetManager;
-import ru.endlesscode.rpginventory.resourcepack.ResourcePackModule;
 import ru.endlesscode.rpginventory.utils.Log;
 import ru.endlesscode.rpginventory.utils.PlayerUtils;
 import ru.endlesscode.rpginventory.utils.StringUtils;
@@ -79,8 +76,6 @@ public class RPGInventory extends JavaPlugin {
 
     private FileLanguage language;
     private boolean placeholderApiHooked = false;
-    private boolean myPetHooked = false;
-    private ResourcePackModule resourcePackModule = null;
 
     public static RPGInventory getInstance() {
         return instance;
@@ -108,22 +103,12 @@ public class RPGInventory extends JavaPlugin {
         return instance.placeholderApiHooked;
     }
 
-    @Contract(pure = true)
-    public static boolean isMyPetHooked() {
-        return instance.myPetHooked;
-    }
-
     public static BukkitLevelSystem getLevelSystem(@NotNull Player player) {
         return instance.mimic.getLevelSystem(player);
     }
 
     public static BukkitClassSystem getClassSystem(@NotNull Player player) {
         return instance.mimic.getClassSystem(player);
-    }
-
-    @Nullable
-    public static ResourcePackModule getResourcePackModule() {
-        return instance.resourcePackModule;
     }
 
     @Override
@@ -223,15 +208,6 @@ public class RPGInventory extends JavaPlugin {
 
         PluginManager pm = getServer().getPluginManager();
 
-        // Hook MyPet
-        if (pm.isPluginEnabled("MyPet") && MyPetManager.init(this)) {
-            myPetHooked = true;
-            Log.i("MyPet used as pet system");
-        } else {
-            myPetHooked = false;
-            Log.i(PetManager.init(this) ? "Pet system is enabled" : "Pet system isn''t loaded");
-        }
-
         // Load modules
         Log.i(CraftManager.init(this) ? "Craft extensions is enabled" : "Craft extensions isn''t loaded");
         Log.i(InventoryLocker.init(this) ? "Inventory lock system is enabled" : "Inventory lock system isn''t loaded");
@@ -248,7 +224,6 @@ public class RPGInventory extends JavaPlugin {
         if (SlotManager.instance().getElytraSlot() != null) {
             pm.registerEvents(new ElytraListener(), this);
         }
-        this.resourcePackModule = ResourcePackModule.init(this);
 
         return true;
     }

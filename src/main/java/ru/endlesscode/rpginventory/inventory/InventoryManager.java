@@ -36,8 +36,7 @@ import org.jetbrains.annotations.Nullable;
 import ru.endlesscode.inspector.report.Reporter;
 import ru.endlesscode.rpginventory.RPGInventory;
 import ru.endlesscode.rpginventory.api.InventoryAPI;
-import ru.endlesscode.rpginventory.event.PetEquipEvent;
-import ru.endlesscode.rpginventory.event.PetUnequipEvent;
+import ru.endlesscode.rpginventory.event.ItemCommandEvent;
 import ru.endlesscode.rpginventory.event.PlayerInventoryLoadEvent;
 import ru.endlesscode.rpginventory.event.PlayerInventoryUnloadEvent;
 import ru.endlesscode.rpginventory.event.listener.InventoryListener;
@@ -47,9 +46,6 @@ import ru.endlesscode.rpginventory.item.ItemManager;
 import ru.endlesscode.rpginventory.item.Texture;
 import ru.endlesscode.rpginventory.misc.config.Config;
 import ru.endlesscode.rpginventory.misc.serialization.Serialization;
-import ru.endlesscode.rpginventory.pet.PetManager;
-import ru.endlesscode.rpginventory.pet.PetType;
-import ru.endlesscode.rpginventory.resourcepack.ResourcePackModule;
 import ru.endlesscode.rpginventory.utils.EffectUtils;
 import ru.endlesscode.rpginventory.utils.InventoryUtils;
 import ru.endlesscode.rpginventory.utils.ItemUtils;
@@ -109,37 +105,6 @@ public class InventoryManager {
     @NotNull
     public static ItemStack getFillSlot() {
         return InventoryManager.FILL_SLOT;
-    }
-
-    public static boolean validatePet(Player player, InventoryAction action, @Nullable ItemStack currentItem, @NotNull ItemStack cursor) {
-        ActionType actionType = ActionType.getTypeOfAction(action);
-
-        if (ItemUtils.isNotEmpty(currentItem)
-                && (actionType == ActionType.GET || action == InventoryAction.SWAP_WITH_CURSOR || actionType == ActionType.DROP)
-                && PetManager.getCooldown(currentItem) > 0) {
-            return false;
-        }
-
-        if (actionType == ActionType.SET) {
-            if (PetType.isPetItem(cursor) && ItemManager.allowedForPlayer(player, cursor, true)) {
-                PetEquipEvent event = new PetEquipEvent(player, cursor);
-                RPGInventory.getInstance().getServer().getPluginManager().callEvent(event);
-
-                if (event.isCancelled()) {
-                    return false;
-                }
-
-                PetManager.respawnPet(event.getPlayer(), event.getPetItem());
-                return true;
-            }
-        } else if (actionType == ActionType.GET || actionType == ActionType.DROP) {
-            PetUnequipEvent event = new PetUnequipEvent(player);
-            RPGInventory.getInstance().getServer().getPluginManager().callEvent(event);
-            PetManager.despawnPet(event.getPlayer());
-            return true;
-        }
-
-        return false;
     }
 
     public static boolean validateArmor(Player player, InventoryAction action, @NotNull Slot slot, ItemStack item) {
@@ -534,7 +499,6 @@ public class InventoryManager {
             InventoryManager.INVENTORIES.put(ProfileUtils.tryToGetProfileUUID(player), playerWrapper);
 
             InventoryLocker.lockSlots(player);
-            PetManager.initPlayer(player);
 
             RPGInventory.getInstance().getServer().getPluginManager().callEvent(new PlayerInventoryLoadEvent.Post(player));
         } catch (IOException e) {
@@ -708,15 +672,10 @@ public class InventoryManager {
     }
 
     public static void initPlayer(@NotNull final Player player, boolean skipJoinMessage) {
-        ResourcePackModule rpModule = RPGInventory.getResourcePackModule();
-        if (rpModule != null) {
-            rpModule.loadResourcePack(player, skipJoinMessage);
-        } else {
-            if (!skipJoinMessage) {
-                EffectUtils.showDefaultJoinMessage(player);
-            }
-            InventoryManager.loadPlayerInventory(player);
+        if (!skipJoinMessage) {
+            EffectUtils.showDefaultJoinMessage(player);
         }
+        InventoryManager.loadPlayerInventory(player);
 
         if (RPGInventory.getPermissions().has(player, "rpginventory.admin")) {
             RPGInventory.getInstance().checkUpdates(player);

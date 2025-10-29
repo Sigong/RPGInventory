@@ -8,7 +8,6 @@ adventure-platform = "4.3.2"
 vault = "1.7.1"
 protocollib = "4.8.0"
 placeholderapi = "2.11.6"
-mypet = "3.12-SNAPSHOT"
 mimic = "0.8.0"
 inspector = "0.12.1"
 bstats = "3.0.0"
@@ -30,7 +29,6 @@ adventure-platform-bukkit = { module = "net.kyori:adventure-platform-bukkit", ve
 vault = { module = "com.github.MilkBowl:VaultAPI", version.ref = "vault" }
 protocollib = { module = "com.comphenix.protocol:ProtocolLib", version.ref = "protocollib" }
 placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholderapi" }
-mypet = { module = "de.keyle:mypet", version.ref = "mypet" }
 mimic = { module = "ru.endlesscode.mimic:mimic-bukkit-api", version.ref = "mimic" }
 
 inspector-bukkit = { module = "ru.endlesscode.inspector:inspector-bukkit", version.ref = "inspector" }

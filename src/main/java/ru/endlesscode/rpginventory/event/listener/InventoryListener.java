@@ -54,7 +54,6 @@ import ru.endlesscode.inspector.bukkit.scheduler.TrackedBukkitRunnable;
 import ru.endlesscode.rpginventory.RPGInventory;
 import ru.endlesscode.rpginventory.api.InventoryAPI;
 import ru.endlesscode.rpginventory.compat.SoundCompat;
-import ru.endlesscode.rpginventory.compat.mypet.MyPetManager;
 import ru.endlesscode.rpginventory.event.PlayerInventoryLoadEvent;
 import ru.endlesscode.rpginventory.inventory.ActionType;
 import ru.endlesscode.rpginventory.inventory.InventoryLocker;
@@ -67,7 +66,6 @@ import ru.endlesscode.rpginventory.inventory.slot.SlotManager;
 import ru.endlesscode.rpginventory.item.ItemManager;
 import ru.endlesscode.rpginventory.misc.config.Config;
 import ru.endlesscode.rpginventory.misc.config.VanillaSlotAction;
-import ru.endlesscode.rpginventory.pet.PetManager;
 import ru.endlesscode.rpginventory.utils.InventoryUtils;
 import ru.endlesscode.rpginventory.utils.ItemUtils;
 import ru.endlesscode.rpginventory.utils.PlayerUtils;
@@ -207,13 +205,8 @@ public class InventoryListener implements Listener {
         }
 
         for (Integer rawSlotId : event.getRawSlots()) {
-            ItemStack cursor = event.getOldCursor();
             Inventory inventory = event.getInventory();
 
-            if (PetManager.isPetItem(cursor)) {
-                event.setCancelled(true);
-                return;
-            }
 
             if (inventory.getType() == InventoryType.CRAFTING) {
                 if (InventoryManager.get(player).isOpened()) {
@@ -340,12 +333,6 @@ public class InventoryListener implements Listener {
                 if ((slot.getSlotType() == Slot.SlotType.SHIELD || slot.getSlotType() == Slot.SlotType.ELYTRA) &&
                         actionType == ActionType.DROP) {
                     event.setCancelled(true);
-                }
-            } else if (slot.getSlotType() == Slot.SlotType.PET) {
-                if (RPGInventory.isMyPetHooked()) {
-                    event.setCancelled(!MyPetManager.validatePet(player, action, currentItem, cursor));
-                } else {
-                    event.setCancelled(!InventoryManager.validatePet(player, action, currentItem, cursor));
                 }
             } else if (slot.getSlotType() == Slot.SlotType.BACKPACK) {
                 if (event.getClick() == ClickType.RIGHT && BackpackManager.open(player, currentItem)) {
@@ -520,8 +507,6 @@ public class InventoryListener implements Listener {
 
         if (!InventoryManager.isAllowedWorld(player.getWorld())) {
             InventoryManager.unloadPlayerInventory(player);
-        } else if (InventoryManager.get(player).hasPet()) {
-            PetManager.respawnPet(player);
         }
     }
 }

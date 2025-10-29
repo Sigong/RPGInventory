@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
+import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 
 import ru.endlesscode.rpginventory.inventory.backpack.BackpackManager;
 import ru.endlesscode.rpginventory.inventory.backpack.BackpackType;
@@ -35,9 +36,6 @@ import ru.endlesscode.rpginventory.item.CustomItem;
 import ru.endlesscode.rpginventory.item.ItemManager;
 import ru.endlesscode.rpginventory.misc.config.Config;
 import ru.endlesscode.rpginventory.misc.config.TexturesType;
-import ru.endlesscode.rpginventory.pet.PetFood;
-import ru.endlesscode.rpginventory.pet.PetManager;
-import ru.endlesscode.rpginventory.pet.PetType;
 
 /**
  * Created by OsipXD on 28.08.2015
@@ -50,8 +48,6 @@ public class ItemUtils {
     public static final String BACKPACK_UID_TAG = "backpack.uid";
     public static final String BACKPACK_TAG = "backpack.id";
     public static final String ITEM_TAG = "rpginv.id";
-    public static final String FOOD_TAG = "food.id";
-    public static final String PET_TAG = "pet.id";
 
     @NotNull
     public static ItemStack setTag(ItemStack item, @NotNull String tag, @NotNull String value) {
@@ -61,6 +57,9 @@ public class ItemUtils {
         }
 
         NbtCompound nbt = NbtFactoryMirror.fromItemCompound(bukkitItem);
+        if (nbt == null) {
+            nbt = NbtFactory.ofCompound("tag");
+        }
         if (!nbt.containsKey(tag)) {
             nbt.put(tag, value);
         }
@@ -146,27 +145,6 @@ public class ItemUtils {
             if (!bpUID.isEmpty()) {
                 ItemUtils.setTag(item, ItemUtils.BACKPACK_UID_TAG, bpUID);
             }
-        } else if (PetType.isPetItem(item)) {
-            PetType petType = PetManager.getPetFromItem(item);
-            if (petType == null) {
-                return new ItemStack(Material.AIR);
-            }
-            foundTextureData = petType.getTextureData();
-
-            long deathTime = PetManager.getDeathTime(item);
-            double health = PetManager.getHealth(item, petType.getHealth());
-
-            item = petType.getSpawnItem();
-            PetManager.saveDeathTime(item, deathTime);
-            PetManager.saveHealth(item, health);
-        } else if (PetFood.isFoodItem(item)) {
-            PetFood food = PetManager.getFoodFromItem(item);
-            if (food == null) {
-                return new ItemStack(Material.AIR);
-            }
-            foundTextureData = food.getTextureData();
-
-            item = food.getFoodItem();
         } else {
             return item;
         }
@@ -185,7 +163,7 @@ public class ItemUtils {
         int data;
         if (Config.texturesType == TexturesType.DAMAGE) {
             data = ((Damageable) meta).getDamage();
-        } else if (meta.hasCustomModelData()) {
+        } else if (Config.texturesType == TexturesType.CUSTOM_MODEL_DATA && meta.hasCustomModelData()) {
             data = meta.getCustomModelData();
         } else {
             data = 0;

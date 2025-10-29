@@ -31,8 +31,6 @@ import ru.endlesscode.rpginventory.event.listener.ItemListener;
 import ru.endlesscode.rpginventory.inventory.InventoryManager;
 import ru.endlesscode.rpginventory.misc.FileLanguage;
 import ru.endlesscode.rpginventory.misc.config.Config;
-import ru.endlesscode.rpginventory.pet.PetManager;
-import ru.endlesscode.rpginventory.pet.PetType;
 import ru.endlesscode.rpginventory.utils.InventoryUtils;
 import ru.endlesscode.rpginventory.utils.ItemUtils;
 import ru.endlesscode.rpginventory.utils.Log;
@@ -63,6 +61,13 @@ public class ItemManager {
     }
 
     public static boolean init(@NotNull RPGInventory instance) {
+        // If mimic-only is enabled, skip loading built-in items
+        if (Config.getConfig().getBoolean("mimic-only", true)) {
+            Log.i("Built-in item system is disabled. Using Mimic for items.");
+            instance.getServer().getPluginManager().registerEvents(new ItemListener(), instance);
+            return true;
+        }
+
         try {
             Path itemsFile = RPGInventory.getInstance().getDataPath().resolve(CONFIG_NAME);
             if (Files.notExists(itemsFile)) {
@@ -180,8 +185,6 @@ public class ItemManager {
         ClassedItem classedItem;
         if (CustomItem.isCustomItem(item)) {
             classedItem = ItemManager.getCustomItem(item);
-        } else if (PetType.isPetItem(item)) {
-            classedItem = PetManager.getPetFromItem(item);
         } else {
             return true;
         }

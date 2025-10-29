@@ -23,7 +23,8 @@ import ru.endlesscode.rpginventory.utils.SafeEnums;
 @SuppressWarnings("unused")
 public enum TexturesType {
     DAMAGE,
-    CUSTOM_MODEL_DATA;
+    CUSTOM_MODEL_DATA,
+    NAMED_IDENTIFIER;
 
     static TexturesType parseString(String stringValue) {
         return SafeEnums.valueOfOrDefault(TexturesType.class, stringValue, DAMAGE, "textures type");
